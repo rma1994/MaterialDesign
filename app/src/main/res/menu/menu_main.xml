@@ -9,7 +9,7 @@
         android:title="@string/menu"
         android:icon="@drawable/menu_btn"
         app:showAsAction="always"/>
-        -->
+    -->
 
     <item
         android:id="@+id/action_settings"

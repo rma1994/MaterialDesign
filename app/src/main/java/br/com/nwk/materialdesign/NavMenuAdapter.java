@@ -40,10 +40,12 @@ public class NavMenuAdapter extends RecyclerView.Adapter<NavMenuAdapter.MyViewHo
         holder.mIcon.setImageResource(current.iconId);
     }
 
+
     @Override
     public int getItemCount() {
         return data.size();
     }
+
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView mTitle;
@@ -55,6 +57,8 @@ public class NavMenuAdapter extends RecyclerView.Adapter<NavMenuAdapter.MyViewHo
             mIcon = (ImageView) itemView.findViewById(R.id.listIcon);
 
         }
+
+
     }
 
 

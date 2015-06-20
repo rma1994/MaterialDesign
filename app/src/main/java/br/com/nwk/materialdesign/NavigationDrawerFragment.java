@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class NavigationDrawerFragment extends Fragment {
     public static final String PREF_FILE_NAME = "testpref";
     public static final String KEY_USER_LEARNED_DRAWER = "user_learned_drawer";
     private NavMenuAdapter adapter;
-    private RecyclerView mRecyclerView;
+    private RecyclerView recyclerView;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private View containterView;
@@ -65,10 +66,25 @@ public class NavigationDrawerFragment extends Fragment {
         View layout = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
 
         //cria um recycler view, cria seu adapter e modela esse adapter como um linear layout, que é o mais parecido com uma lista
-        mRecyclerView = (RecyclerView) layout.findViewById(R.id.drawerList);
+        recyclerView = (RecyclerView) layout.findViewById(R.id.drawerList);
         adapter = new NavMenuAdapter(getActivity(),getData());
-        mRecyclerView.setAdapter(adapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        //da ao recycler view a capacidade de escutar cliques
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), recyclerView, new ClickListener() {
+            @Override
+            public void onClick(View v, int position) {
+                Toast.makeText(getActivity(),"onClick" + position,Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onLongClick(View v, int position) {
+                Toast.makeText(getActivity(),"onLongClick" + position,Toast.LENGTH_LONG).show();
+            }
+        }));
+
+
         return layout;
     }
 
@@ -136,6 +152,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     }
 
+
     public static void saveToPreferences(Context context, String preferenceName, String preferenceValue){
 
         //cria um arquivo de preferencias que somente este app pode alterar
@@ -145,9 +162,66 @@ public class NavigationDrawerFragment extends Fragment {
         editor.apply();
     }
 
-    //pega o conceito e o arquivo que queremos ler e retornamos ele, o default e para o caso de nao haver nenhum valor dentro dela.
+    //pega o contexto e o arquivo que queremos ler e retornamos ele, o default e para o caso de nao haver nenhum valor dentro dela.
     public static String readFromPreferences (Context context, String preferenceName, String defaultValue){
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(preferenceName, defaultValue);
+    }
+
+    //Classe para gerenciar os cliques na Recycler View
+    class RecyclerTouchListener implements RecyclerView.OnItemTouchListener{
+        //este cara consegue lhe dizer que a ação do usuario foi um click, duplo click, longo click, etc.
+        private GestureDetector gestureDetector;
+        private ClickListener clickListener;
+
+        public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final ClickListener clickListener){
+            this.clickListener=clickListener;
+
+            gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    View child = recyclerView.findChildViewUnder(e.getX(),e.getY());
+
+                    if((child != null) && (clickListener != null)){
+                        clickListener.onClick(child, recyclerView.getChildPosition(child));
+                    }
+
+                    return super.onSingleTapUp(e);
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    View child = recyclerView.findChildViewUnder(e.getX(),e.getY());
+
+                    if((child != null) && (clickListener != null)){
+                        clickListener.onLongClick(child, recyclerView.getChildPosition(child));
+                    }
+
+                    super.onLongPress(e);
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            View child = rv.findChildViewUnder(e.getX(), e.getY());
+
+            if((child != null) && (clickListener != null && gestureDetector.onTouchEvent(e))){
+                clickListener.onClick(child, rv.getChildPosition(child));
+            }
+
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+        }
+    }
+
+    //Uma interface para escutar os cliques do usuario
+    public static interface ClickListener{
+        public void onClick(View v, int position);
+        public void onLongClick(View v, int position);
     }
 }
