@@ -11,6 +11,10 @@
     <string name="close">Close</string>
     <string name="car_washes">Lava Jatos</string>
     <string name="talk_to_us">Fale Conosco</string>
+    <string-array name="tabs">
+        <item>Lava Jatos</item>
+        <item>Favoritos</item>
+    </string-array>
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>

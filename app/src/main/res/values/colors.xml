@@ -9,5 +9,5 @@
     <color name="colorHighlight">#B6B6B6</color>
     <color name="colorAccent">#4CAF50</color>
 
-    <color name="navBarBackground">#FAFAFA</color>
+    <color name="navBarBackground">@android:color/white</color>
 </resources>
