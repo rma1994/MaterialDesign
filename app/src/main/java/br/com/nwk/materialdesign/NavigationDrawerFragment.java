@@ -20,6 +20,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.nwk.materialdesign.adapter.NavMenuAdapter;
+import br.com.nwk.materialdesign.model.MenuItem;
+
 
 /**
  * A simple {@link Fragment} subclass.

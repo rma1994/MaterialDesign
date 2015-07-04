@@ -1,6 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="6dp"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
+    card_view:cardBackgroundColor="@color/white"
+    card_view:cardCornerRadius="2dp"
+    card_view:elevation="6dp">
 
-</RelativeLayout>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/image_list"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:src="@mipmap/ic_launcher" />
+
+
+        <TextView
+            android:id="@+id/value_nome_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="72dp"
+            android:text="Lava Já!" />
+
+
+        <TextView
+            android:id="@+id/value_tel_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="72dp"
+            android:layout_below="@id/value_nome_list"
+            android:text="(19) 3355-1234" />
+
+        <TextView
+            android:id="@+id/distancia_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/value_tel_list"
+            android:layout_marginLeft="72dp"
+            android:text="Distância: " />
+
+        <TextView
+            android:id="@+id/value_distancia_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/value_tel_list"
+            android:layout_toRightOf="@id/distancia_list"
+            android:text="30km" />
+
+        <ImageView
+            android:id="@+id/imagem_favorito"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:src="@mipmap/favorite_border" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

@@ -1,31 +1,51 @@
 package br.com.nwk.materialdesign;
 
-import android.app.Fragment;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.nwk.materialdesign.adapter.MainAdapter;
+import br.com.nwk.materialdesign.adapter.NavMenuAdapter;
+import br.com.nwk.materialdesign.model.LavaJato;
 import br.com.nwk.materialdesign.tabs.SlidingTabLayout;
+import br.com.nwk.materialdesign.util.Constants;
+import br.com.nwk.materialdesign.util.NetworkUtils;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int TABS_AMOUNT = 2;
     private Toolbar mToolbar;
     private ViewPager mPager;
     private SlidingTabLayout mTabs;
@@ -34,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
@@ -53,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         mTabs.setCustomTabView(R.layout.custom_tabs_view, R.id.tabText);
         mTabs.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorAccent));
+
 
         mTabs.setViewPager(mPager);
     }
@@ -76,15 +98,23 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-        if(id == R.id.filter_btn){
-            startActivity(new Intent(this,CarWashDetail.class));
+        if (id == R.id.filter_btn) {
+            startActivity(new Intent(this, CarWashDetail.class));
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    //pega quantos dps vc quer e converte para pxs, tendo em mente o tamanho da tela.
+    public int toPixels(float dip) {
+        Resources r = getResources();
+        float densid = r.getDisplayMetrics().density;
+        int px = (int) (dip * densid + 0.5f);
+        return px;
+    }
 
-    class MyPagerAdapter extends FragmentPagerAdapter{
+
+    class MyPagerAdapter extends FragmentPagerAdapter {
 
         String tabs[] = getResources().getStringArray(R.array.tabs);
         int icons[] = {R.mipmap.home, R.mipmap.favorite};
@@ -102,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             Drawable drawable = getResources().getDrawable(icons[position]);
-            drawable.setBounds(0,0,72,72);
+            drawable.setBounds(toPixels(0), toPixels(0), toPixels(36), toPixels(36));
             ImageSpan imageSpan = new ImageSpan(drawable);
 
             //Spannable é o cara que consegue combinar textos com  imagens
@@ -114,35 +144,144 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 2;
+            return TABS_AMOUNT;
         }
     }
 
 
-
-    public static class MyFragment extends android.support.v4.app.Fragment{
+    public static class MyFragment extends android.support.v4.app.Fragment {
         private TextView textView;
+        private MainAdapter adapter;
+        private RecyclerView recyclerView;
+        private ActionBarDrawerToggle mDrawerToggle;
+        private DrawerLayout mDrawerLayout;
+        private View lavajatoView = null;
+        private List<LavaJato> lavaJato;
 
-        public static MyFragment getInstance(int position){
+        public static MyFragment getInstance(int position) {
             MyFragment myFragment = new MyFragment();
             Bundle args = new Bundle();
-            args.putInt("position",position);
+            args.putInt("position", position);
             myFragment.setArguments(args);
 
             return myFragment;
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,@Nullable Bundle savedInstanceState) {
-            View layout = inflater.inflate(R.layout.fragment_my, container, false);
-
-            textView = (TextView) layout.findViewById(R.id.position);
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             Bundle bundle = getArguments();
-            if(bundle!=null){
-                textView.setText("The page selected is " + bundle.getInt("position"));
+
+            //View layout = null;
+            //layout = inflater.inflate(R.layout.fragment_main, container, false);
+            //Se o bundle não for nulo e for 1, linko ele com minha tela que tem o recycler view
+            if (bundle != null) {
+                if(bundle.getInt("position") == 0){
+                    this.lavajatoView = inflater.inflate(R.layout.fragment_main, container, false);
+                    ProgressBar bar = (ProgressBar) lavajatoView.findViewById(R.id.progress);
+
+                    //cria um recycler view, cria seu adapter e modela esse adapter como um linear layout, que é o mais parecido com uma lista
+                    recyclerView = (RecyclerView) lavajatoView.findViewById(R.id.drawerListMain);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    recyclerView.setHasFixedSize(true);
+
+                    new GetCarWashTask(bar).execute();
+
+                }
+
             }
 
-            return layout;
+            return lavajatoView;
         }
+
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+        }
+
+        /*public static List<LavaJato> getData(){
+            List<LavaJato> data = new ArrayList<>();
+            int icons[] = {R.mipmap.ic_launcher};
+            String[] nome = {"Heisenberg"};
+            String[] telefone = {"(19) 3322-1155"};
+            String[] distancia = {"53km"};
+
+            //pega as informações necessarias e adiciona em nossa lista chamada data, depois retorna essa data;
+            for(int i=0;/*i<nome.length && i<icons.length;i<10;i++){
+                LavaJato current = new LavaJato();
+                current.icone = icons[0];
+                current.nome = nome[0];
+                current.telefone = telefone[0];
+                current.distancia = distancia[0];
+
+                data.add(current);
+            }
+
+            return data;
+        }*/
+
+        private class GetCarWashTask extends AsyncTask<Void, Integer, List<LavaJato>>{
+
+            private ProgressBar bar;
+
+            public GetCarWashTask (ProgressBar bar){
+                this.bar = bar;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                bar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            protected List<LavaJato> doInBackground(Void... params) {
+
+                NetworkUtils nwk = new NetworkUtils();
+                String jsonStr = nwk.doGetRequest(Constants.HTTP_PROTOCOL,Constants.HOST,Constants.CARWASH );
+                List<LavaJato> data =  new ArrayList<>();
+                Log.e("TAG","back");
+                if (jsonStr!=null){
+                    try{
+
+                        JSONArray jsonOArray = new JSONArray(jsonStr);
+                        for(int i=0;i<jsonOArray.length();i++){
+                            JSONObject jsonObject = jsonOArray.getJSONObject(i);
+                            LavaJato lavaJato = new LavaJato(jsonObject);
+                            data.add(lavaJato);
+                            //publishProgress((int) ((i/(float) jsonOArray.length())*100));
+                        }
+
+
+                    }catch (Exception ex){
+                        Log.e("TAG",ex.getMessage(),ex);
+                    }
+
+                }
+                return data;
+            }
+
+
+            @Override
+            protected void onProgressUpdate(Integer... values) {
+                super.onProgressUpdate(values);
+                bar.setProgress(values[0]);
+            }
+
+            @Override
+            protected void onPostExecute(List<LavaJato> lavaJatos) {
+                if(lavaJatos != null){
+                    MyFragment.this.lavaJato = lavaJatos;
+                    recyclerView.setAdapter(new MainAdapter(getActivity(),lavaJatos));
+                    Log.e("TAG", "post");
+                }
+                bar.setVisibility(View.INVISIBLE);
+
+            }
+
+        }
+
     }
+
+
 }

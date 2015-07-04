@@ -7,7 +7,8 @@
     <color name="colorSecondaryText">#727272</color>
     <color name="colorDivider">#B6B6B6</color>
     <color name="colorHighlight">#B6B6B6</color>
-    <color name="colorAccent">#4CAF50</color>
+    <color name="colorAccent">#CDDC39</color>
 
     <color name="navBarBackground">@android:color/white</color>
+    <color name="white">@android:color/white</color>
 </resources>
