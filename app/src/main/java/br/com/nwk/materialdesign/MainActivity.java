@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -150,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     public static class MyFragment extends android.support.v4.app.Fragment {
+        public static final int SHOWBARYES = 1;
+        public static final int SHOWBARNO = 0;
         private TextView textView;
         private MainAdapter adapter;
         private RecyclerView recyclerView;
@@ -157,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
         private DrawerLayout mDrawerLayout;
         private View lavajatoView = null;
         private List<LavaJato> lavaJato;
+        private SwipeRefreshLayout swipeRefreshLayout;
 
         public static MyFragment getInstance(int position) {
             MyFragment myFragment = new MyFragment();
@@ -171,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             Bundle bundle = getArguments();
 
+
             //View layout = null;
             //layout = inflater.inflate(R.layout.fragment_main, container, false);
             //Se o bundle não for nulo e for 1, linko ele com minha tela que tem o recycler view
@@ -178,6 +183,10 @@ public class MainActivity extends AppCompatActivity {
                 if(bundle.getInt("position") == 0){
                     this.lavajatoView = inflater.inflate(R.layout.fragment_main, container, false);
                     ProgressBar bar = (ProgressBar) lavajatoView.findViewById(R.id.progress);
+                    swipeRefreshLayout = (SwipeRefreshLayout) lavajatoView.findViewById(R.id.swipeToRefresh);
+
+                    swipeRefreshLayout.setOnRefreshListener(onRefreshListener(bar));
+                    swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorHighlight, R.color.colorPrimaryDark);
 
                     //cria um recycler view, cria seu adapter e modela esse adapter como um linear layout, que é o mais parecido com uma lista
                     recyclerView = (RecyclerView) lavajatoView.findViewById(R.id.drawerListMain);
@@ -185,13 +194,26 @@ public class MainActivity extends AppCompatActivity {
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
                     recyclerView.setHasFixedSize(true);
 
-                    new GetCarWashTask(bar).execute();
+                    new GetCarWashTask(bar,SHOWBARYES).execute();
 
                 }
 
             }
 
             return lavajatoView;
+        }
+
+        private SwipeRefreshLayout.OnRefreshListener onRefreshListener(ProgressBar bar){
+            final ProgressBar pbar = bar;
+
+            return new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    new GetCarWashTask(pbar,SHOWBARNO).execute();
+
+                }
+
+            };
         }
 
         @Override
@@ -223,15 +245,19 @@ public class MainActivity extends AppCompatActivity {
         private class GetCarWashTask extends AsyncTask<Void, Integer, List<LavaJato>>{
 
             private ProgressBar bar;
+            int showBar;
 
-            public GetCarWashTask (ProgressBar bar){
+            public GetCarWashTask (ProgressBar bar, int showBar){
+                this.showBar = showBar;
                 this.bar = bar;
             }
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                bar.setVisibility(View.VISIBLE);
+                if(showBar == SHOWBARYES) {
+                    bar.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -243,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("TAG","back");
                 if (jsonStr!=null){
                     try{
-
+                        //Thread.sleep(500);
                         JSONArray jsonOArray = new JSONArray(jsonStr);
                         for(int i=0;i<jsonOArray.length();i++){
                             JSONObject jsonObject = jsonOArray.getJSONObject(i);
@@ -276,6 +302,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("TAG", "post");
                 }
                 bar.setVisibility(View.INVISIBLE);
+                swipeRefreshLayout.setRefreshing(false);
 
             }
 
