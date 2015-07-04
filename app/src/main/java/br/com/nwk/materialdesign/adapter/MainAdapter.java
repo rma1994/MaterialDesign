@@ -42,7 +42,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         holder.mNome.setText(current.nome);
         holder.mTelefone.setText(current.telefone);
         holder.mDist.setText(current.distancia);
-        holder.mIcon.setImageResource(current.icone);
+        holder.mIcon.setImageResource(current.iconeClassificacao);
     }
 
     @Override

@@ -5,5 +5,5 @@ package br.com.nwk.materialdesign.model;
  */
 public class MenuItem {
     public int iconId;
-    public String title;
+    public int title;
 }

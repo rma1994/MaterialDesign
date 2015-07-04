@@ -2,7 +2,9 @@ package br.com.nwk.materialdesign;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -10,6 +12,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -31,6 +34,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     public static final String PREF_FILE_NAME = "testpref";
     public static final String KEY_USER_LEARNED_DRAWER = "user_learned_drawer";
+    public static final int EMAIL = 1;
     private NavMenuAdapter adapter;
     private RecyclerView recyclerView;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -78,7 +82,21 @@ public class NavigationDrawerFragment extends Fragment {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View v, int position) {
-                Toast.makeText(getActivity(),"onClick" + position,Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity(),"onClick" + position,Toast.LENGTH_LONG).show();
+
+                //Se a pessoa clicar em e-mail, dispara uma intent para o aplicativo padrão de e-mails da pessoa
+                if(position == EMAIL){
+                    try {
+                        Uri uri = Uri.parse("mailto:richard_matheus2004@yahoo.com.br");
+                        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, uri);
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
+                        //emailIntent.setType("text/html");
+                        startActivity(emailIntent);
+                    }catch (Exception e){
+                        Toast.makeText(getActivity(),R.string.error_open_email,Toast.LENGTH_LONG).show();
+                        Log.e("TAG", e.getMessage());
+                    }
+                }
             }
 
             @Override
@@ -95,7 +113,7 @@ public class NavigationDrawerFragment extends Fragment {
     public static List<MenuItem> getData(){
         List<MenuItem> data = new ArrayList<>();
         int[] icons = {R.mipmap.car_wash_menu, R.mipmap.send_menu};
-        String[] titles = {"Lava Jatos","Fale Conosco"};
+        int[] titles = {R.string.car_washes,R.string.talk_to_us};
 
         //pega as informações necessarias e adiciona em nossa lista chamada data, depois retorna essa data;
         for(int i=0;i<titles.length && i<icons.length;i++){

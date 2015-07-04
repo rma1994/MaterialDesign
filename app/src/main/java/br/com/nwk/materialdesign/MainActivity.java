@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                     swipeRefreshLayout = (SwipeRefreshLayout) lavajatoView.findViewById(R.id.swipeToRefresh);
 
                     swipeRefreshLayout.setOnRefreshListener(onRefreshListener(bar));
-                    swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorHighlight, R.color.colorPrimaryDark);
+                    swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
                     //cria um recycler view, cria seu adapter e modela esse adapter como um linear layout, que é o mais parecido com uma lista
                     recyclerView = (RecyclerView) lavajatoView.findViewById(R.id.drawerListMain);
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
             //pega as informações necessarias e adiciona em nossa lista chamada data, depois retorna essa data;
             for(int i=0;/*i<nome.length && i<icons.length;i<10;i++){
                 LavaJato current = new LavaJato();
-                current.icone = icons[0];
+                current.iconeClassificacao = icons[0];
                 current.nome = nome[0];
                 current.telefone = telefone[0];
                 current.distancia = distancia[0];
@@ -263,13 +263,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected List<LavaJato> doInBackground(Void... params) {
 
+                //se conecta a internet para pegar as informações dos lavajatos
                 NetworkUtils nwk = new NetworkUtils();
                 String jsonStr = nwk.doGetRequest(Constants.HTTP_PROTOCOL,Constants.HOST,Constants.CARWASH );
                 List<LavaJato> data =  new ArrayList<>();
-                Log.e("TAG","back");
+                //Log.e("TAG","back");
+
+                //Extrai as informações do meu jsonarray
                 if (jsonStr!=null){
                     try{
-                        //Thread.sleep(500);
+                        //Thread.sleep(1500);
                         JSONArray jsonOArray = new JSONArray(jsonStr);
                         for(int i=0;i<jsonOArray.length();i++){
                             JSONObject jsonObject = jsonOArray.getJSONObject(i);
@@ -301,6 +304,8 @@ public class MainActivity extends AppCompatActivity {
                     recyclerView.setAdapter(new MainAdapter(getActivity(),lavaJatos));
                     Log.e("TAG", "post");
                 }
+
+                //Esconde as barras de carregamento ao terminar de carregar
                 bar.setVisibility(View.INVISIBLE);
                 swipeRefreshLayout.setRefreshing(false);
 
