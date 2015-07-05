@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -86,16 +87,7 @@ public class NavigationDrawerFragment extends Fragment {
 
                 //Se a pessoa clicar em e-mail, dispara uma intent para o aplicativo padrão de e-mails da pessoa
                 if(position == EMAIL){
-                    try {
-                        Uri uri = Uri.parse("mailto:richard_matheus2004@yahoo.com.br");
-                        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, uri);
-                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
-                        //emailIntent.setType("text/html");
-                        startActivity(emailIntent);
-                    }catch (Exception e){
-                        Toast.makeText(getActivity(),R.string.error_open_email,Toast.LENGTH_LONG).show();
-                        Log.e("TAG", e.getMessage());
-                    }
+                    new EmailAsyncTask().execute();
                 }
             }
 
@@ -244,5 +236,31 @@ public class NavigationDrawerFragment extends Fragment {
     public static interface ClickListener{
         public void onClick(View v, int position);
         public void onLongClick(View v, int position);
+    }
+
+    private class EmailAsyncTask extends AsyncTask<Void, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Boolean result = false;
+            try {
+                Uri uri = Uri.parse("mailto:richard_matheus2004@yahoo.com.br");
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, uri);
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
+                //emailIntent.setType("text/html");
+                startActivity(emailIntent);
+                result = true;
+            }catch (Exception e){
+                Log.e("TAG", e.getMessage());
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            if(b==false){
+                Toast.makeText(getActivity(),R.string.error_open_email,Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
