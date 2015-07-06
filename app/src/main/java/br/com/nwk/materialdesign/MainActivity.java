@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             Drawable drawable = getResources().getDrawable(icons[position]);
-            drawable.setBounds(toPixels(0), toPixels(0), toPixels(36), toPixels(36));
+            drawable.setBounds(toPixels(0), toPixels(0), toPixels(24), toPixels(24));
             ImageSpan imageSpan = new ImageSpan(drawable);
 
             //Spannable é o cara que consegue combinar textos com  imagens

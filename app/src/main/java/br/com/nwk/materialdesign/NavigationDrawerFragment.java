@@ -104,7 +104,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     public static List<MenuItem> getData(){
         List<MenuItem> data = new ArrayList<>();
-        int[] icons = {R.mipmap.car_wash_menu, R.mipmap.send_menu};
+        int[] icons = {R.mipmap.car_wash, R.mipmap.send_menu};
         int[] titles = {R.string.car_washes,R.string.talk_to_us};
 
         //pega as informações necessarias e adiciona em nossa lista chamada data, depois retorna essa data;

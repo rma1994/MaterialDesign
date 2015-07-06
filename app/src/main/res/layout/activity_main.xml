@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
-            <!-- isso faz o view pager pegar todo espaço disponivel na tela -->
+            <!-- isso faz o view pager pegar todo espaco disponivel na tela -->
 
     </LinearLayout>
 

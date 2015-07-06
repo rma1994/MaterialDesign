@@ -47,7 +47,7 @@ public class LavaJato {
             try{
                 if(!object.isNull(objectName)){
                     result = object.getString(objectName);
-                    System.out.println(object.getString(objectName));
+                    //System.out.println(object.getString(objectName));
                 }
 
             }catch (JSONException e){
@@ -64,7 +64,7 @@ public class LavaJato {
             try{
                 if(!object.isNull(objectName)){
                     result = object.getInt(objectName);
-                    System.out.println(object.getString(objectName));
+                    //System.out.println(object.getString(objectName));
                 }
 
             }catch (JSONException e){
@@ -81,7 +81,7 @@ public class LavaJato {
             try{
                 if(!object.isNull(objectName)){
                     result = object.getInt(objectName);
-                    System.out.println(object.getString(objectName));
+                    //System.out.println(object.getString(objectName));
                 }
 
             }catch (JSONException e){
