@@ -28,16 +28,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.nwk.materialdesign.adapter.MainAdapter;
-import br.com.nwk.materialdesign.adapter.NavMenuAdapter;
 import br.com.nwk.materialdesign.model.LavaJato;
 import br.com.nwk.materialdesign.tabs.SlidingTabLayout;
 import br.com.nwk.materialdesign.util.Constants;
@@ -100,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (id == R.id.filter_btn) {
-            startActivity(new Intent(this, CarWashDetail.class));
+            //startActivity(new Intent(this, CarWashDetail.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -126,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public android.support.v4.app.Fragment getItem(int position) {
-            MyFragment myFragment = MyFragment.getInstance(position);
-            return myFragment;
+            CarWashListFragment carWashListFragment = CarWashListFragment.getInstance(position);
+            return carWashListFragment;
         }
 
         @Override
@@ -150,9 +149,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static class MyFragment extends android.support.v4.app.Fragment {
-        public static final int SHOWBARYES = 1;
-        public static final int SHOWBARNO = 0;
+    public static class CarWashListFragment extends android.support.v4.app.Fragment {
         private TextView textView;
         private MainAdapter adapter;
         private RecyclerView recyclerView;
@@ -162,13 +159,13 @@ public class MainActivity extends AppCompatActivity {
         private List<LavaJato> lavaJato;
         private SwipeRefreshLayout swipeRefreshLayout;
 
-        public static MyFragment getInstance(int position) {
-            MyFragment myFragment = new MyFragment();
+        public static CarWashListFragment getInstance(int position) {
+            CarWashListFragment carWashListFragment = new CarWashListFragment();
             Bundle args = new Bundle();
             args.putInt("position", position);
-            myFragment.setArguments(args);
+            carWashListFragment.setArguments(args);
 
-            return myFragment;
+            return carWashListFragment;
         }
 
         @Override
@@ -194,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
                     recyclerView.setHasFixedSize(true);
 
-                    new GetCarWashTask(bar,SHOWBARYES).execute();
+                    //starta a asynctask que atualiza os dados dos lava jatos sem mostrar a minha progressbar, mostrando apenas a do swiperepreshlayout
+                    new GetCarWashTask(bar,Constants.YES).execute();
 
                 }
 
@@ -209,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             return new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    new GetCarWashTask(pbar,SHOWBARNO).execute();
+                    new GetCarWashTask(pbar,Constants.NO).execute();
 
                 }
 
@@ -219,6 +217,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onActivityCreated(@Nullable Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
+        }
+
+        //Listener para escutar os cliques nos itens do menu
+        private MainAdapter.LavaJatoOnClickListener onClickLavaJato(){
+            return new MainAdapter.LavaJatoOnClickListener() {
+                @Override
+                public void onClickLavaJato(View view, int idx) {
+                    LavaJato c = lavaJato.get(idx);
+                    //Toast.makeText(getActivity(),"LavaJato: " + c.id,Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(view.getContext(),CarWashDetail.class);
+                    intent.putExtra(Constants.LAVA_JATO, c);
+                    startActivity(intent);
+                }
+            };
         }
 
         /*public static List<LavaJato> getData(){
@@ -255,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                if(showBar == SHOWBARYES) {
+                if(showBar == Constants.YES) {
                     bar.setVisibility(View.VISIBLE);
                 }
             }
@@ -300,14 +313,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(List<LavaJato> lavaJatos) {
                 if(lavaJatos != null){
-                    MyFragment.this.lavaJato = lavaJatos;
-                    recyclerView.setAdapter(new MainAdapter(getActivity(),lavaJatos));
+                    CarWashListFragment.this.lavaJato = lavaJatos;
+                    recyclerView.setAdapter(new MainAdapter(getActivity(),lavaJatos,onClickLavaJato()));
                     Log.e("TAG", "post");
                 }
 
                 //Esconde as barras de carregamento ao terminar de carregar
                 bar.setVisibility(View.INVISIBLE);
                 swipeRefreshLayout.setRefreshing(false);
+
 
             }
 

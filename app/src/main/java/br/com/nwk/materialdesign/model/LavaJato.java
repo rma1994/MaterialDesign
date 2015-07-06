@@ -3,10 +3,12 @@ package br.com.nwk.materialdesign.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Created by rma19_000 on 02/07/2015.
  */
-public class LavaJato {
+public class LavaJato implements Serializable {
     public int iconeClassificacao;
     public int id;
     public String nome;
@@ -16,8 +18,11 @@ public class LavaJato {
     public String cep;
     public String cidade;
     public String estado;
+    public String endereco;
     public String email;
-    public String lavagem;
+    public int ecologica;
+    public int reuso;
+    public int tradicional;
     public double latitude;
     public double longitude;
     public String telefone;
@@ -33,11 +38,14 @@ public class LavaJato {
         cidade = getString(object,"cidade");
         estado = getString(object,"estado");
         email = getString(object,"email");
-        lavagem = getString(object,"lavagem");
+        ecologica = getInt(object, "ecologica");
+        reuso = getInt(object, "reuso");
+        tradicional = getInt(object, "tradicional");
         telefone = getString(object,"telefone");
         latitude = getDouble(object, "latitude");
         longitude = getDouble(object, "longitude");
         distancia = getString(object,"_id") + "Km";
+        endereco = rua + ", " + numero + " - " + bairro + "\n" + cidade + " - " + estado + "\n" + cep;
     }
 
     private String getString(JSONObject object, String objectName){

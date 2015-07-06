@@ -20,12 +20,13 @@ import br.com.nwk.materialdesign.model.LavaJato;
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder> {
 
     private LayoutInflater inflater;
+    private LavaJatoOnClickListener lavaJatoOnClickListener;
     List<LavaJato> data = Collections.emptyList();
 
-    public MainAdapter(Context context, List<LavaJato> data){
+    public MainAdapter(Context context, List<LavaJato> data, LavaJatoOnClickListener lavaJatoOnClickListener){
         inflater = LayoutInflater.from(context);
         this.data = data;
-
+        this.lavaJatoOnClickListener = lavaJatoOnClickListener;
     }
 
     @Override
@@ -37,12 +38,21 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
     }
 
     @Override
-    public void onBindViewHolder(MainViewHolder holder, int position) {
+    public void onBindViewHolder(final MainViewHolder holder, final int position) {
         LavaJato current = data.get(position);
         holder.mNome.setText(current.nome);
         holder.mTelefone.setText(current.telefone);
         holder.mDist.setText(current.distancia);
         holder.mIcon.setImageResource(current.iconeClassificacao);
+
+        if(lavaJatoOnClickListener != null){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    lavaJatoOnClickListener.onClickLavaJato(holder.itemView,position);
+                }
+            });
+        }
     }
 
     @Override
@@ -64,7 +74,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
             mIcon = (ImageView) itemView.findViewById(R.id.image_list);
 
         }
+    }
 
-
+    public interface LavaJatoOnClickListener{
+        public void onClickLavaJato(View view, int idx);
     }
 }

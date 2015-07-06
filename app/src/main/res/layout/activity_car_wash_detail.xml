@@ -25,6 +25,7 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/img_lavagem_detalhes"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_centerVertical="true"
@@ -32,6 +33,7 @@
             android:src="@mipmap/ic_launcher" />
 
         <TextView
+            android:id="@+id/detalhes_nome_lavajato"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -64,6 +66,7 @@
 
             <!--telefone-->
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_telefone"
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
                 android:clickable="true"
@@ -101,6 +104,7 @@
 
             <!--layout que contem o email-->
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_email"
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
                 android:clickable="true"
@@ -137,6 +141,7 @@
 
             <!--endereco-->
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/layout_endereco"
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
                 android:clickable="true"
@@ -191,7 +196,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="24dp"
                     android:layout_marginLeft="72dp"
-                    android:checked="true"
                     android:clickable="false"
                     android:text="@string/dry_wash"/>
 
@@ -209,7 +213,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="24dp"
                     android:layout_below="@id/checkbox_reuso"
-                    android:checked="true"
                     android:clickable="false"
                     android:layout_marginLeft="72dp"
                     android:text="@string/traditional"/>
