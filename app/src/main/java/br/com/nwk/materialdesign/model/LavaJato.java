@@ -2,6 +2,7 @@ package br.com.nwk.materialdesign.model;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +29,7 @@ public class LavaJato implements Serializable {
     public double latitude;
     public double longitude;
     public String telefone;
-    public String distancia;
+    public double distancia;
 
     public LavaJato (JSONObject object) {
         id = getInt(object,"_id");
@@ -46,7 +47,7 @@ public class LavaJato implements Serializable {
         telefone = getString(object,"telefone");
         latitude = getDouble(object, "latitude");
         longitude = getDouble(object, "longitude");
-        distancia = getString(object,"_id") + "Km";
+        //distancia = getString(object,"_id") + "Km";
         endereco = rua + ", " + numero + " - " + bairro + "\n" + cidade + " - " + estado + "\n" + cep;
     }
 
@@ -100,5 +101,33 @@ public class LavaJato implements Serializable {
             }
         }
         return result;
+    }
+
+    public void setDistance(JSONObject object){
+
+        try {
+            //Pega o array rows do json object
+            JSONArray rowsArray = object.getJSONArray("rows");
+            JSONObject row = rowsArray.getJSONObject(0);
+
+            //pega o array elements do json row
+            JSONArray elements = row.getJSONArray("elements");
+            JSONObject element = elements.getJSONObject(0);
+
+            //pega a distancia
+            JSONObject distance = element.getJSONObject("distance");
+
+            if(distance.has("text")){
+                this.distancia = Double.parseDouble(distance.getString("text").replace(" km","").replace(",",""));
+                Log.e("Distancia",String.valueOf(this.distancia));
+            } else {
+                this.distancia = 0.000;
+            }
+
+        } catch (JSONException e){
+            this.distancia = 0.000;
+            Log.e("Erro Distancia", e.getMessage());
+        }
+
     }
 }

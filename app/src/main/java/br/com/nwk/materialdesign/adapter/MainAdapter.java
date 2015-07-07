@@ -42,8 +42,14 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         LavaJato current = data.get(position);
         holder.mNome.setText(current.nome);
         holder.mTelefone.setText(current.telefone);
-        holder.mDist.setText(current.distancia);
         holder.mIcon.setImageResource(current.iconeClassificacao);
+
+        if(current.distancia != 0.000) {
+            holder.mDist.setText(String.valueOf(current.distancia) + " km");
+        } else {
+            holder.mDist.setText("Erro ao calcular");
+        }
+
 
         if(lavaJatoOnClickListener != null){
             holder.itemView.setOnClickListener(new View.OnClickListener() {

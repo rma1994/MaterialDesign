@@ -35,7 +35,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,6 +43,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import br.com.nwk.materialdesign.adapter.MainAdapter;
@@ -51,6 +54,7 @@ import br.com.nwk.materialdesign.model.LavaJato;
 import br.com.nwk.materialdesign.model.User;
 import br.com.nwk.materialdesign.tabs.SlidingTabLayout;
 import br.com.nwk.materialdesign.util.Constants;
+import br.com.nwk.materialdesign.util.CustomComparator;
 import br.com.nwk.materialdesign.util.LocationUtils;
 import br.com.nwk.materialdesign.util.NetworkUtils;
 
@@ -114,13 +118,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
         }
 
         if (id == R.id.filter_btn) {
-            //startActivity(new Intent(this, CarWashDetail.class));
-        }
+          *  //startActivity(new Intent(this, CarWashDetail.class));
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -411,8 +415,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 //se conecta a internet para pegar as informações dos lavajatos
                 NetworkUtils nwk = new NetworkUtils();
-                String jsonStr = nwk.doGetRequest(Constants.HTTP_PROTOCOL,Constants.HOST,Constants.CARWASH );
-                List<LavaJato> data =  new ArrayList<>();
+                String jsonStr = nwk.doGetRequest(Constants.HTTPS_PROTOCOL,Constants.HOST_EWASH,Constants.CARWASH );
+                List<LavaJato> listEcologic =  new ArrayList<>();
+                List<LavaJato> listReuse =  new ArrayList<>();
+                List<LavaJato> listTrad=  new ArrayList<>();
+                List<LavaJato> listFinal=  new ArrayList<>();
                 //Log.e("TAG","back");
 
                 //Extrai as informações do meu jsonarray
@@ -423,17 +430,41 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         for(int i=0;i<jsonOArray.length();i++){
                             JSONObject jsonObject = jsonOArray.getJSONObject(i);
                             LavaJato lavaJato = new LavaJato(jsonObject);
-                            data.add(lavaJato);
+
+                            //Aqui o aplicativo se conecta com a GoogleMatrixAPI e pega a distancia de cada um dos lava jatos para o usuario.
+                            //String path = "json?origins=-22.831367-47.269207&destinations=-22.832593,-47.271755&mode=DRIVING&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
+                            String path = "json?origins="+User.location.getLatitude()+","+User.location.getLongitude()+"&destinations="+lavaJato.latitude+","+lavaJato.longitude+"&mode=DRIVING&units=metric&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
+                            String jsonDistancia = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_GOOGLE_API, path);
+                            //Log.e("jsondistancia",jsonDistancia);
+                            JSONObject jsonObjectDistancia = new JSONObject(jsonDistancia);
+                            lavaJato.setDistance(jsonObjectDistancia);
+
+                            //Adiciona o lava jato em sua respectiva lista
+                            if(lavaJato.ecologica == Constants.YES) {
+                                listEcologic.add(lavaJato);
+                            } else if (lavaJato.reuso == Constants.YES){
+                                listReuse.add(lavaJato);
+                            } else{
+                                listTrad.add(lavaJato);
+                            }
                             //publishProgress((int) ((i/(float) jsonOArray.length())*100));
                         }
 
+                        //organiza as listas de acordo com o local mais proximo
+                        Collections.sort(listEcologic, new CustomComparator());
+                        Collections.sort(listReuse, new CustomComparator());
+                        Collections.sort(listTrad, new CustomComparator());
+
+                        listFinal.addAll(listEcologic);
+                        listFinal.addAll(listReuse);
+                        listFinal.addAll(listTrad);
 
                     }catch (Exception ex){
                         Log.e("TAG",ex.getMessage(),ex);
                     }
 
                 }
-                return data;
+                return listFinal;
             }
 
 
