@@ -324,7 +324,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             if(requestCode == LOCALIZACAO_LIBERADA){
                 if(locationUtils.isLocationEnabled(getActivity())){
+                    //starta a AsyncTask e reabilida o botao swipe to refresh
                     new GetCarWashTask(bar, Constants.YES).execute();
+                    swipeRefreshLayout.setEnabled(true);
                 } else{
                     getActivity().finish();
                 }
