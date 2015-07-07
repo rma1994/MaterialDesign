@@ -24,6 +24,7 @@ public class NetworkUtils {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
+
     public String doGetRequest (String protocol, String host, String path){
         String responseStr = null;
         try{

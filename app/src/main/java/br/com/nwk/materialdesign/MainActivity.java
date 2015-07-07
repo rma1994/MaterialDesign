@@ -1,8 +1,11 @@
 package br.com.nwk.materialdesign;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,6 +33,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -38,23 +48,27 @@ import java.util.List;
 
 import br.com.nwk.materialdesign.adapter.MainAdapter;
 import br.com.nwk.materialdesign.model.LavaJato;
+import br.com.nwk.materialdesign.model.User;
 import br.com.nwk.materialdesign.tabs.SlidingTabLayout;
 import br.com.nwk.materialdesign.util.Constants;
+import br.com.nwk.materialdesign.util.LocationUtils;
 import br.com.nwk.materialdesign.util.NetworkUtils;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener , com.google.android.gms.location.LocationListener{
 
     private static final int TABS_AMOUNT = 2;
+    public static final int LOCALIZACAO_LIBERADA = 100;
     private Toolbar mToolbar;
     private ViewPager mPager;
     private SlidingTabLayout mTabs;
+    protected GoogleMap map;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
@@ -75,8 +89,14 @@ public class MainActivity extends AppCompatActivity {
         mTabs.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorAccent));
 
-
         mTabs.setViewPager(mPager);
+
+        //Conecta aos serviços da Google
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     @Override
@@ -113,6 +133,70 @@ public class MainActivity extends AppCompatActivity {
         return px;
     }
 
+    //Inicia a conexao com os serviços da google
+    @Override
+    protected void onStart() {
+        //Toast.makeText(this, "Startando", Toast.LENGTH_SHORT).show();
+        super.onStart();
+        mGoogleApiClient.connect();
+
+    }
+
+    //para a conexao com os serviços da google
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    //pausa a conexao com os serviçlos da google
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    //ao se conectar com a google, inicia o metodo que pega a localização
+    @Override
+    public void onConnected(Bundle bundle) {
+        //Toast.makeText(this,"Conectado ao googleplay services",Toast.LENGTH_SHORT).show();
+        startLocationUpdates();
+    }
+
+    //Caso a conexao tenha sido interrompida
+    @Override
+    public void onConnectionSuspended(int i) {
+        //Toast.makeText(this,"Conexao interrompida",Toast.LENGTH_SHORT).show();
+
+    }
+
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Toast.makeText(this,"Erro ao conectar" + connectionResult,Toast.LENGTH_LONG).show();
+        Log.e("Erro de conexao", "Erro ao conectar" + connectionResult);
+    }
+
+    //Começa a pegar a atualização da localidade do usuario, com tempo normal de um minuto e minimo de 30sec
+    protected void startLocationUpdates(){
+        Log.d("TAG", "startLocationUpdates()");
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(60000);
+        mLocationRequest.setFastestInterval(30000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    protected void stopLocationUpdates(){
+        //Log.d("StopLocation", "stopLocationUpdates()");
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+
+    public void onLocationChanged(Location location){
+        User.location = location;
+        //Toast.makeText(this,User.location.getLatitude() + "," + User.location.getLongitude(),Toast.LENGTH_LONG).show();
+        //Log.e("Localização atual", String.valueOf(latitude) + "," + String.valueOf(longitude));
+    }
 
     class MyPagerAdapter extends FragmentPagerAdapter {
 
@@ -151,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static class CarWashListFragment extends android.support.v4.app.Fragment {
         private TextView textView;
+        private LocationUtils locationUtils = new LocationUtils();
         private MainAdapter adapter;
         private RecyclerView recyclerView;
         private ActionBarDrawerToggle mDrawerToggle;
@@ -158,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
         private View lavajatoView = null;
         private List<LavaJato> lavaJato;
         private SwipeRefreshLayout swipeRefreshLayout;
+        private ProgressBar bar;
 
         public static CarWashListFragment getInstance(int position) {
             CarWashListFragment carWashListFragment = new CarWashListFragment();
@@ -179,11 +265,7 @@ public class MainActivity extends AppCompatActivity {
             if (bundle != null) {
                 if(bundle.getInt("position") == 0){
                     this.lavajatoView = inflater.inflate(R.layout.fragment_main, container, false);
-                    ProgressBar bar = (ProgressBar) lavajatoView.findViewById(R.id.progress);
-                    swipeRefreshLayout = (SwipeRefreshLayout) lavajatoView.findViewById(R.id.swipeToRefresh);
-
-                    swipeRefreshLayout.setOnRefreshListener(onRefreshListener(bar));
-                    swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+                    bar = (ProgressBar) lavajatoView.findViewById(R.id.progress);
 
                     //cria um recycler view, cria seu adapter e modela esse adapter como um linear layout, que é o mais parecido com uma lista
                     recyclerView = (RecyclerView) lavajatoView.findViewById(R.id.drawerListMain);
@@ -191,8 +273,44 @@ public class MainActivity extends AppCompatActivity {
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
                     recyclerView.setHasFixedSize(true);
 
-                    //starta a asynctask que atualiza os dados dos lava jatos sem mostrar a minha progressbar, mostrando apenas a do swiperepreshlayout
-                    new GetCarWashTask(bar,Constants.YES).execute();
+                    //layout para atualizar a lista de acordo com o usuario
+                    swipeRefreshLayout = (SwipeRefreshLayout) lavajatoView.findViewById(R.id.swipeToRefresh);
+                    swipeRefreshLayout.setOnRefreshListener(onRefreshListener(bar));
+                    swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+                    swipeRefreshLayout.setEnabled(false);
+
+                    //checa se o usuario liberou o acesso a localidade dele
+                    //caso o usuario não tenha liberado, mostra um dialog pedindo para ele habilitar
+                    if(locationUtils.isLocationEnabled(getActivity())) {
+                        //starta a asynctask que atualiza os dados dos lava jatos sem mostrar a minha progressbar, mostrando apenas a do swiperepreshlayout
+                        new GetCarWashTask(bar, Constants.YES).execute();
+
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle(R.string.location_not_allowed_title);
+                        builder.setMessage(R.string.location_not_allowed_message);
+                        builder.setCancelable(false);
+                        builder.setPositiveButton(R.string.allow, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+
+                                //Toast.makeText(getActivity(), "Liberou!", Toast.LENGTH_LONG).show();
+                                startActivityForResult(intent, LOCALIZACAO_LIBERADA);
+                            }
+                        });
+
+                        builder.setNegativeButton(R.string.dont_allow, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //Toast.makeText(getActivity(), "Não Liberou :(", Toast.LENGTH_LONG).show();
+                                getActivity().finish();
+                            }
+                        });
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
 
                 }
 
@@ -200,6 +318,19 @@ public class MainActivity extends AppCompatActivity {
 
             return lavajatoView;
         }
+
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if(requestCode == LOCALIZACAO_LIBERADA){
+                if(locationUtils.isLocationEnabled(getActivity())){
+                    new GetCarWashTask(bar, Constants.YES).execute();
+                } else{
+                    getActivity().finish();
+                }
+            }
+        }
+
 
         private SwipeRefreshLayout.OnRefreshListener onRefreshListener(ProgressBar bar){
             final ProgressBar pbar = bar;
@@ -321,13 +452,9 @@ public class MainActivity extends AppCompatActivity {
                 //Esconde as barras de carregamento ao terminar de carregar
                 bar.setVisibility(View.INVISIBLE);
                 swipeRefreshLayout.setRefreshing(false);
-
-
             }
 
         }
 
     }
-
-
 }

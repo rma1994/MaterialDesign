@@ -26,6 +26,7 @@ import java.util.List;
 
 import br.com.nwk.materialdesign.adapter.NavMenuAdapter;
 import br.com.nwk.materialdesign.model.MenuItem;
+import br.com.nwk.materialdesign.util.Constants;
 
 
 /**
@@ -35,6 +36,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     public static final String PREF_FILE_NAME = "testpref";
     public static final String KEY_USER_LEARNED_DRAWER = "user_learned_drawer";
+    public static final String ASSUNTO_EMAIL = "Feedback";
     public static final int EMAIL = 1;
     private NavMenuAdapter adapter;
     private RecyclerView recyclerView;
@@ -87,7 +89,7 @@ public class NavigationDrawerFragment extends Fragment {
 
                 //Se a pessoa clicar em e-mail, dispara uma intent para o aplicativo padrão de e-mails da pessoa
                 if(position == EMAIL){
-                    new EmailAsyncTask().execute();
+                    new EmailAsyncTask(Constants.NOSSO_EMAIL, ASSUNTO_EMAIL).execute();
                 }
             }
 
@@ -240,13 +242,21 @@ public class NavigationDrawerFragment extends Fragment {
 
     private class EmailAsyncTask extends AsyncTask<Void, Void, Boolean>{
 
+        String email;
+        String assunto;
+
+        public EmailAsyncTask(String email, String assunto){
+            this.email = email;
+            this.assunto = assunto;
+        }
+
         @Override
         protected Boolean doInBackground(Void... params) {
             Boolean result = false;
             try {
-                Uri uri = Uri.parse("mailto:richard_matheus2004@yahoo.com.br");
+                Uri uri = Uri.parse("mailto:" + email);
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, uri);
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, assunto);
                 //emailIntent.setType("text/html");
                 startActivity(emailIntent);
                 result = true;
@@ -259,7 +269,7 @@ public class NavigationDrawerFragment extends Fragment {
         @Override
         protected void onPostExecute(Boolean b) {
             if(b==false){
-                Toast.makeText(getActivity(),R.string.error_open_email,Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),R.string.error_execute_asynctask,Toast.LENGTH_LONG).show();
             }
         }
     }

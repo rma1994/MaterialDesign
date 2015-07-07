@@ -1,25 +1,33 @@
 package br.com.nwk.materialdesign;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import br.com.nwk.materialdesign.model.LavaJato;
+import br.com.nwk.materialdesign.model.User;
 import br.com.nwk.materialdesign.util.Constants;
 
 
 public class CarWashDetail extends AppCompatActivity {
+
+    public static final String ASSUNTO_EMAIL = "Contato via eWash";
+    public static final int OPCAO_EMAIL = 0;
+    public static final int OPCAO_MAPS = 1;
+    public static final int OPCAO_ROTA = 2;
 
     private Toolbar mToolbar;
     private ImageView mClassificacao;
@@ -34,6 +42,8 @@ public class CarWashDetail extends AppCompatActivity {
     private RelativeLayout mLayoutTelefone;
     private RelativeLayout mLayoutEmail;
     private RelativeLayout mLayoutEndereco;
+    private LavaJato lj;
+    //private LjDetailsOnClickListener ljDetailsOnClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +67,52 @@ public class CarWashDetail extends AppCompatActivity {
         mLayoutEmail = (RelativeLayout) findViewById(R.id.layout_email);
         mLayoutEndereco = (RelativeLayout) findViewById(R.id.layout_endereco);
 
+        /*setListener(mLayoutTelefone);
+        setListener(mLayoutEmail);
+        setListener(mLayoutEndereco);*/
+
+        //configura os clicklistener dos layouts da minha tela
+        //abre o dialer do celular com o numero do lava jato
+        mLayoutTelefone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(v.getContext(),"algo",Toast.LENGTH_SHORT).show();
+                Uri uri = Uri.parse("tel:" + lj.telefone);
+                Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+                startActivity(intent);
+            }
+        });
+
+        //Starta uma AsyncTask que se encarregará de abrir o email.
+        //Esta operaçao leva alguns segundos, por isso estou usando uma nota thread.
+        mLayoutEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new OptionAsyncTask(v, OPCAO_EMAIL).execute();
+            }
+        });
+
+        //Abre o GoogleMaps de acordo com a latitude e longitude do lava jato
+        mLayoutEndereco.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new OptionAsyncTask( v, OPCAO_MAPS).execute();
+            }
+        });
+
+        //ClickListener do FAB
+        mFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new OptionAsyncTask( v, OPCAO_ROTA).execute();
+            }
+        });
+
         //configura a tela para voltar a tela anterior
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //intent com as informações do lava jato
         Intent intent = getIntent();
         if(intent!=null){
             LavaJato lj = (LavaJato) getIntent().getSerializableExtra(Constants.LAVA_JATO);
@@ -92,11 +144,15 @@ public class CarWashDetail extends AppCompatActivity {
             finish();
         }
 
+
+
         return super.onOptionsItemSelected(item);
     }
 
 
     private void setLavaJato(LavaJato lj){
+        this.lj = lj;
+
         mNome.setText(lj.nome);
         mTelefone.setText(lj.telefone);
         mEmail.setText(lj.email);
@@ -114,4 +170,63 @@ public class CarWashDetail extends AppCompatActivity {
         return false;
     }
 
+    private class OptionAsyncTask extends AsyncTask<Void, Void, Boolean> {
+        View view;
+        int opcao;
+
+        public OptionAsyncTask( View view, int opcao){
+            this.view = view;
+            this.opcao = opcao;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Boolean result = false;
+            //direciona para o email
+            if (opcao == OPCAO_EMAIL) {
+                try {
+                    Uri uri = Uri.parse("mailto:" + lj.email);
+                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, uri);
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, ASSUNTO_EMAIL);
+                    //emailIntent.setType("text/html");
+                    startActivity(emailIntent);
+                    result = true;
+                } catch (Exception e) {
+                    Log.e("EMAIL", e.getMessage());
+                }
+                //mostra no mapa
+            } else if(opcao == OPCAO_MAPS){
+                try {
+                    String GEO_URI = "http://maps.google.com/maps?q="+lj.latitude+","+lj.longitude+"(" + lj.nome +")&iwloc=A&hl=es";
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(GEO_URI));
+                    startActivity(intent);
+                    //Log.e("TEST", Double.toString(lj.latitude) + "," + Double.toString(lj.longitude));
+                    result = true;
+                }catch (Exception e){
+                    Log.e("MAPS", e.getMessage());
+                }
+                //traça rota, opção do meu fab
+            } else if (opcao == OPCAO_ROTA){
+                try{
+                    String origem = User.location.getLatitude() + "," + User.location.getLongitude() ;
+                    String destino = lj.latitude + "," + lj.longitude;
+                    String url = "http://maps.google.com/maps?f=d&saddr="+origem+"&daddr="+destino+"&hl=pt";
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    result = true;
+                } catch (Exception e){
+                    Log.e("MAPS", e.getMessage());
+                }
+            }
+
+            return result;
+        }
+
+
+        @Override
+        protected void onPostExecute(Boolean b) {
+            if(b==false){
+                Toast.makeText(view.getContext(),R.string.error_execute_asynctask,Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }

@@ -143,11 +143,14 @@
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/layout_endereco"
                 android:layout_width="match_parent"
-                android:layout_height="72dp"
+                android:layout_height="wrap_content"
+                android:minHeight="72dp"
                 android:clickable="true"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:background="@drawable/item_bg"
                 android:foreground="?attr/selectableItemBackground"
-                android:gravity="center_vertical"
+                android:layout_gravity="center_horizontal"
                 android:listSelector="@android:color/transparent">
 
                 <ImageView

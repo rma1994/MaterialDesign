@@ -14,12 +14,17 @@
     <string name="dry_wash">A seco</string>
     <string name="reuse">Água de reuso</string>
     <string name="traditional">Tradicional</string>
+    <string name="location_not_allowed_message">Ajude a aplicação a funcionar corretamente liberando acesso a sua localização</string>
+    <string name="allow">Liberar</string>
+    <string name="dont_allow">Não Liberar</string>
+    <string name="location_not_allowed_title">Acesso a Localização Não Liberado</string>
+
     <string-array name="tabs">
         <item>Lava Jatos</item>
         <item>Favoritos</item>
     </string-array>
 
-    <string name="error_open_email">Erro ao abrir email</string>
+    <string name="error_execute_asynctask">Erro ao executar a solicitação.</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

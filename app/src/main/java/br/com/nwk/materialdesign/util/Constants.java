@@ -12,4 +12,5 @@ public class Constants {
     public static final String LAVA_JATO = "LAVA_JATO";
     public static final int YES = 1;
     public static final int NO = 0;
+    public static final String NOSSO_EMAIL = "richard_matheus2004@yahoo.com.br";
 }

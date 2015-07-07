@@ -1,5 +1,7 @@
 package br.com.nwk.materialdesign.model;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -88,8 +90,9 @@ public class LavaJato implements Serializable {
         if(object.has(objectName)){
             try{
                 if(!object.isNull(objectName)){
-                    result = object.getInt(objectName);
-                    //System.out.println(object.getString(objectName));
+                    result = object.getDouble(objectName);
+
+                    //Log.e("Test", )
                 }
 
             }catch (JSONException e){
