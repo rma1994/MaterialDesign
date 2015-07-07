@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     if(locationUtils.isLocationEnabled(getActivity())) {
                         //starta a asynctask que atualiza os dados dos lava jatos sem mostrar a minha progressbar, mostrando apenas a do swiperepreshlayout
                         new GetCarWashTask(bar, Constants.YES).execute();
-
+                        swipeRefreshLayout.setEnabled(true);
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle(R.string.location_not_allowed_title);
