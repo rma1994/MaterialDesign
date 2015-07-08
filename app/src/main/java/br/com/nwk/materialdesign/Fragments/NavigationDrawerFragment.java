@@ -1,4 +1,4 @@
-package br.com.nwk.materialdesign;
+package br.com.nwk.materialdesign.Fragments;
 
 
 import android.content.Context;
@@ -24,6 +24,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.nwk.materialdesign.R;
 import br.com.nwk.materialdesign.adapter.NavMenuAdapter;
 import br.com.nwk.materialdesign.model.MenuItem;
 import br.com.nwk.materialdesign.util.Constants;

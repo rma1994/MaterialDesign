@@ -12,4 +12,5 @@
 
     <color name="navBarBackground">@android:color/white</color>
     <color name="white">@android:color/white</color>
+    <color name="black">@android:color/black</color>
 </resources>

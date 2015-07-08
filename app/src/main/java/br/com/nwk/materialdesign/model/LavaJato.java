@@ -119,7 +119,7 @@ public class LavaJato implements Serializable {
 
             if(distance.has("text")){
                 this.distancia = Double.parseDouble(distance.getString("text").replace(" km","").replace(",",""));
-                Log.e("Distancia",String.valueOf(this.distancia));
+                //Log.e("Distancia",String.valueOf(this.distancia));
             } else {
                 this.distancia = 0.000;
             }

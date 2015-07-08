@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:background="@color/navBarBackground"
         android:orientation="vertical"
-        tools:context="br.com.nwk.materialdesign.NavigationDrawerFragment">
+        tools:context="br.com.nwk.materialdesign.Fragments.NavigationDrawerFragment">
 
         <LinearLayout
             android:id="@+id/containerDrawerImage"

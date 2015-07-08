@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Collections;
 import java.util.List;
 
 import br.com.nwk.materialdesign.R;
@@ -17,28 +16,32 @@ import br.com.nwk.materialdesign.model.LavaJato;
 /**
  * Created by rma19_000 on 02/07/2015.
  */
-public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder> {
-
-    private LayoutInflater inflater;
+public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashViewHolder> {
+    protected static final String TAG = "eWash";
+    private final List<LavaJato> data;
+    private final Context context;
+    //private CarWashOnClickListener carWashOnClickListener;
+    //private LayoutInflater inflater;
     private LavaJatoOnClickListener lavaJatoOnClickListener;
-    List<LavaJato> data = Collections.emptyList();
 
-    public MainAdapter(Context context, List<LavaJato> data, LavaJatoOnClickListener lavaJatoOnClickListener){
-        inflater = LayoutInflater.from(context);
+
+    public CarWashAdapter(Context context, List<LavaJato> data, LavaJatoOnClickListener lavaJatoOnClickListener){
+        //inflater = LayoutInflater.from(context);
+        this.context = context;
         this.data = data;
         this.lavaJatoOnClickListener = lavaJatoOnClickListener;
     }
 
     @Override
-    public MainViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.car_wash_row, parent, false);
-        MainViewHolder holder = new MainViewHolder(view);
-
+    public CarWashViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //View view = inflater.inflate(R.layout.car_wash_row, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.car_wash_row, parent, false);
+        CarWashViewHolder holder = new CarWashViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(final MainViewHolder holder, final int position) {
+    public void onBindViewHolder(final CarWashViewHolder holder, final int position) {
         LavaJato current = data.get(position);
         holder.mNome.setText(current.nome);
         holder.mTelefone.setText(current.telefone);
@@ -61,18 +64,23 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return data.size();
+    public interface LavaJatoOnClickListener{
+        public void onClickLavaJato(View view, int idx);
     }
 
-    class MainViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public int getItemCount() {
+        //se data for nulo, returna zero
+        return this.data != null ? this.data.size() : 0;
+    }
+
+    class CarWashViewHolder extends RecyclerView.ViewHolder {
         TextView mNome;
         TextView mTelefone;
         TextView mDist;
         ImageView mIcon;
 
-        public MainViewHolder(View itemView) {
+        public CarWashViewHolder(View itemView) {
             super(itemView);
             mNome = (TextView) itemView.findViewById(R.id.value_nome_list);
             mTelefone = (TextView) itemView.findViewById(R.id.value_tel_list);
@@ -82,7 +90,5 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.MainViewHolder
         }
     }
 
-    public interface LavaJatoOnClickListener{
-        public void onClickLavaJato(View view, int idx);
-    }
+
 }

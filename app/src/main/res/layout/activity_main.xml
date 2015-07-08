@@ -21,6 +21,12 @@
             android:id="@+id/app_bar"
             layout="@layout/app_bar" />
 
+        <FrameLayout
+            android:id="@+id/drawer_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <!--
         <br.com.nwk.materialdesign.tabs.SlidingTabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
@@ -31,13 +37,13 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
-            <!-- isso faz o view pager pegar todo espaco disponivel na tela -->
 
+        -->
     </LinearLayout>
 
     <fragment
         android:id="@+id/fragment_navigation_drawer"
-        android:name="br.com.nwk.materialdesign.NavigationDrawerFragment"
+        android:name="br.com.nwk.materialdesign.Fragments.NavigationDrawerFragment"
         android:layout_width="@dimen/nav_drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"

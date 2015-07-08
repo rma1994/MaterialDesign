@@ -1,36 +1,16 @@
 package br.com.nwk.materialdesign;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ImageSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -39,41 +19,30 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import br.com.nwk.materialdesign.adapter.MainAdapter;
-import br.com.nwk.materialdesign.model.LavaJato;
+import br.com.nwk.materialdesign.Fragments.CarWashNewFragment;
+import br.com.nwk.materialdesign.Fragments.CarWashTabFragment;
+import br.com.nwk.materialdesign.Fragments.NavigationDrawerFragment;
 import br.com.nwk.materialdesign.model.User;
 import br.com.nwk.materialdesign.tabs.SlidingTabLayout;
-import br.com.nwk.materialdesign.util.Constants;
-import br.com.nwk.materialdesign.util.CustomComparator;
-import br.com.nwk.materialdesign.util.LocationUtils;
-import br.com.nwk.materialdesign.util.NetworkUtils;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener , com.google.android.gms.location.LocationListener{
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
     private static final int TABS_AMOUNT = 2;
     public static final int LOCALIZACAO_LIBERADA = 100;
+
     private Toolbar mToolbar;
-    private ViewPager mPager;
-    private SlidingTabLayout mTabs;
+    //private ViewPager mPager;
+    //private SlidingTabLayout mTabs;
     protected GoogleMap map;
     private GoogleApiClient mGoogleApiClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
 
@@ -85,15 +54,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mDrawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
 
         //Cria as abas
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
-        mTabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        replaceFragment(new CarWashTabFragment());
+
+        //mPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+        /*mTabs = (SlidingTabLayout) findViewById(R.id.tabs);
         mTabs.setDistributeEvenly(true); //faz as abas ocuparem o mesmo espaço na tela
         mTabs.setCustomTabView(R.layout.custom_tabs_view, R.id.tabText);
         mTabs.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorAccent));
 
-        mTabs.setViewPager(mPager);
+        mTabs.setViewPager(mPager);*/
 
         //Conecta aos serviços da Google
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -101,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+
     }
 
     @Override
@@ -129,13 +101,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         return super.onOptionsItemSelected(item);
     }
 
-    //pega quantos dps vc quer e converte para pxs, tendo em mente o tamanho da tela.
-    public int toPixels(float dip) {
-        Resources r = getResources();
-        float densid = r.getDisplayMetrics().density;
-        int px = (int) (dip * densid + 0.5f);
-        return px;
+    public void replaceFragment(Fragment frag){
+        getSupportFragmentManager().beginTransaction().replace(R.id.drawer_container, frag, "TAG").commit();
     }
+
+
 
     //Inicia a conexao com os serviços da google
     @Override
@@ -177,12 +147,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(this,"Erro ao conectar" + connectionResult,Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Erro ao conectar" + connectionResult, Toast.LENGTH_LONG).show();
         Log.e("Erro de conexao", "Erro ao conectar" + connectionResult);
     }
 
     //Começa a pegar a atualização da localidade do usuario, com tempo normal de um minuto e minimo de 30sec
-    protected void startLocationUpdates(){
+    protected void startLocationUpdates() {
         Log.d("TAG", "startLocationUpdates()");
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(60000);
@@ -191,17 +161,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
 
-    protected void stopLocationUpdates(){
+    protected void stopLocationUpdates() {
         //Log.d("StopLocation", "stopLocationUpdates()");
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
-    public void onLocationChanged(Location location){
+    public void onLocationChanged(Location location) {
         User.location = location;
         //Toast.makeText(this,User.location.getLatitude() + "," + User.location.getLongitude(),Toast.LENGTH_LONG).show();
         //Log.e("Localização atual", String.valueOf(latitude) + "," + String.valueOf(longitude));
     }
 
+    /*
     class MyPagerAdapter extends FragmentPagerAdapter {
 
         String tabs[] = getResources().getStringArray(R.array.tabs);
@@ -234,13 +205,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         public int getCount() {
             return TABS_AMOUNT;
         }
-    }
+    }*/
 
-
+    /*
     public static class CarWashListFragment extends android.support.v4.app.Fragment {
         private TextView textView;
         private LocationUtils locationUtils = new LocationUtils();
-        private MainAdapter adapter;
+        private CarWashAdapter adapter;
         private RecyclerView recyclerView;
         private ActionBarDrawerToggle mDrawerToggle;
         private DrawerLayout mDrawerLayout;
@@ -248,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         private List<LavaJato> lavaJato;
         private SwipeRefreshLayout swipeRefreshLayout;
         private ProgressBar bar;
+
 
         public static CarWashListFragment getInstance(int position) {
             CarWashListFragment carWashListFragment = new CarWashListFragment();
@@ -259,16 +231,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+
+        @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             Bundle bundle = getArguments();
 
 
             //View layout = null;
-            //layout = inflater.inflate(R.layout.fragment_main, container, false);
+            //layout = inflater.inflate(R.layout.fragment_car_wash, container, false);
             //Se o bundle não for nulo e for 1, linko ele com minha tela que tem o recycler view
             if (bundle != null) {
-                if(bundle.getInt("position") == 0){
-                    this.lavajatoView = inflater.inflate(R.layout.fragment_main, container, false);
+                if (bundle.getInt("position") == 0) {
+                    this.lavajatoView = inflater.inflate(R.layout.fragment_car_wash, container, false);
                     bar = (ProgressBar) lavajatoView.findViewById(R.id.progress);
 
                     //cria um recycler view, cria seu adapter e modela esse adapter como um linear layout, que é o mais parecido com uma lista
@@ -285,10 +262,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     //checa se o usuario liberou o acesso a localidade dele
                     //caso o usuario não tenha liberado, mostra um dialog pedindo para ele habilitar
-                    if(locationUtils.isLocationEnabled(getActivity())) {
-                        //starta a asynctask que atualiza os dados dos lava jatos sem mostrar a minha progressbar, mostrando apenas a do swiperepreshlayout
-                        new GetCarWashTask(bar, Constants.YES).execute();
-                        swipeRefreshLayout.setEnabled(true);
+                    if (locationUtils.isLocationEnabled(getActivity())) {
+                        if (User.firstRun == 1 && User.lavaJato != null) {
+                            this.lavaJato = User.lavaJato;
+                            recyclerView.setAdapter(new CarWashAdapter(getActivity(), this.lavaJato, onClickLavaJato()));
+                            swipeRefreshLayout.setEnabled(true);
+
+                        } else {
+                            //starta a asynctask que atualiza os dados dos lava jatos sem mostrar a minha progressbar, mostrando apenas a do swiperepreshlayout
+                            new GetCarWashTask(bar, Constants.YES).execute();
+                            swipeRefreshLayout.setEnabled(true);
+                            //Log.e("a", User.firstRun + ".");
+                            User.firstRun = 1;
+                            //Log.e("a",User.firstRun+".");
+                        }
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle(R.string.location_not_allowed_title);
@@ -320,31 +307,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             }
 
+
             return lavajatoView;
         }
 
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            if(requestCode == LOCALIZACAO_LIBERADA){
-                if(locationUtils.isLocationEnabled(getActivity())){
+            if (requestCode == LOCALIZACAO_LIBERADA) {
+                if (locationUtils.isLocationEnabled(getActivity())) {
                     //starta a AsyncTask e reabilida o botao swipe to refresh
                     new GetCarWashTask(bar, Constants.YES).execute();
                     swipeRefreshLayout.setEnabled(true);
-                } else{
+                } else {
                     getActivity().finish();
                 }
             }
         }
 
 
-        private SwipeRefreshLayout.OnRefreshListener onRefreshListener(ProgressBar bar){
+        private SwipeRefreshLayout.OnRefreshListener onRefreshListener(ProgressBar bar) {
             final ProgressBar pbar = bar;
 
             return new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
                 public void onRefresh() {
-                    new GetCarWashTask(pbar,Constants.NO).execute();
+                    new GetCarWashTask(pbar, Constants.NO).execute();
 
                 }
 
@@ -357,14 +345,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         //Listener para escutar os cliques nos itens do menu
-        private MainAdapter.LavaJatoOnClickListener onClickLavaJato(){
-            return new MainAdapter.LavaJatoOnClickListener() {
+        private CarWashAdapter.LavaJatoOnClickListener onClickLavaJato() {
+            return new CarWashAdapter.LavaJatoOnClickListener() {
                 @Override
                 public void onClickLavaJato(View view, int idx) {
                     LavaJato c = lavaJato.get(idx);
                     //Toast.makeText(getActivity(),"LavaJato: " + c.id,Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(view.getContext(),CarWashDetail.class);
+                    Intent intent = new Intent(view.getContext(), CarWashDetail.class);
                     intent.putExtra(Constants.LAVA_JATO, c);
                     startActivity(intent);
                 }
@@ -391,13 +379,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             return data;
         }*/
-
-        private class GetCarWashTask extends AsyncTask<Void, Integer, List<LavaJato>>{
+        /*
+        private class GetCarWashTask extends AsyncTask<Void, Integer, List<LavaJato>> {
 
             private ProgressBar bar;
             int showBar;
 
-            public GetCarWashTask (ProgressBar bar, int showBar){
+            public GetCarWashTask(ProgressBar bar, int showBar) {
                 this.showBar = showBar;
                 this.bar = bar;
             }
@@ -405,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                if(showBar == Constants.YES) {
+                if (showBar == Constants.YES) {
                     bar.setVisibility(View.VISIBLE);
                 }
             }
@@ -415,36 +403,36 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 //se conecta a internet para pegar as informações dos lavajatos
                 NetworkUtils nwk = new NetworkUtils();
-                String jsonStr = nwk.doGetRequest(Constants.HTTPS_PROTOCOL,Constants.HOST_EWASH,Constants.CARWASH );
-                List<LavaJato> listEcologic =  new ArrayList<>();
-                List<LavaJato> listReuse =  new ArrayList<>();
-                List<LavaJato> listTrad=  new ArrayList<>();
-                List<LavaJato> listFinal=  new ArrayList<>();
+                String jsonStr = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_EWASH, Constants.CARWASH);
+                List<LavaJato> listEcologic = new ArrayList<>();
+                List<LavaJato> listReuse = new ArrayList<>();
+                List<LavaJato> listTrad = new ArrayList<>();
+                List<LavaJato> listFinal = new ArrayList<>();
                 //Log.e("TAG","back");
 
                 //Extrai as informações do meu jsonarray
-                if (jsonStr!=null){
-                    try{
+                if (jsonStr != null) {
+                    try {
                         //Thread.sleep(1500);
                         JSONArray jsonOArray = new JSONArray(jsonStr);
-                        for(int i=0;i<jsonOArray.length();i++){
+                        for (int i = 0; i < jsonOArray.length(); i++) {
                             JSONObject jsonObject = jsonOArray.getJSONObject(i);
                             LavaJato lavaJato = new LavaJato(jsonObject);
 
                             //Aqui o aplicativo se conecta com a GoogleMatrixAPI e pega a distancia de cada um dos lava jatos para o usuario.
                             //String path = "json?origins=-22.831367-47.269207&destinations=-22.832593,-47.271755&mode=DRIVING&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
-                            String path = "json?origins="+User.location.getLatitude()+","+User.location.getLongitude()+"&destinations="+lavaJato.latitude+","+lavaJato.longitude+"&mode=DRIVING&units=metric&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
+                            String path = "json?origins=" + User.location.getLatitude() + "," + User.location.getLongitude() + "&destinations=" + lavaJato.latitude + "," + lavaJato.longitude + "&mode=DRIVING&units=metric&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
                             String jsonDistancia = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_GOOGLE_API, path);
                             //Log.e("jsondistancia",jsonDistancia);
                             JSONObject jsonObjectDistancia = new JSONObject(jsonDistancia);
                             lavaJato.setDistance(jsonObjectDistancia);
 
                             //Adiciona o lava jato em sua respectiva lista
-                            if(lavaJato.ecologica == Constants.YES) {
+                            if (lavaJato.ecologica == Constants.YES) {
                                 listEcologic.add(lavaJato);
-                            } else if (lavaJato.reuso == Constants.YES){
+                            } else if (lavaJato.reuso == Constants.YES) {
                                 listReuse.add(lavaJato);
-                            } else{
+                            } else {
                                 listTrad.add(lavaJato);
                             }
                             //publishProgress((int) ((i/(float) jsonOArray.length())*100));
@@ -459,14 +447,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         listFinal.addAll(listReuse);
                         listFinal.addAll(listTrad);
 
-                    }catch (Exception ex){
-                        Log.e("TAG",ex.getMessage(),ex);
+                    } catch (Exception ex) {
+                        Log.e("TAG", ex.getMessage(), ex);
                     }
 
                 }
                 return listFinal;
             }
-
 
             @Override
             protected void onProgressUpdate(Integer... values) {
@@ -476,10 +463,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             @Override
             protected void onPostExecute(List<LavaJato> lavaJatos) {
-                if(lavaJatos != null){
+                if (lavaJatos != null) {
+                    User.lavaJato = lavaJatos;
                     CarWashListFragment.this.lavaJato = lavaJatos;
-                    recyclerView.setAdapter(new MainAdapter(getActivity(),lavaJatos,onClickLavaJato()));
-                    Log.e("TAG", "post");
+                    recyclerView.setAdapter(new CarWashAdapter(getActivity(), lavaJatos, onClickLavaJato()));
+                    //Log.e("TAG", "post");
                 }
 
                 //Esconde as barras de carregamento ao terminar de carregar
@@ -489,5 +477,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         }
 
-    }
+    }*/
 }
