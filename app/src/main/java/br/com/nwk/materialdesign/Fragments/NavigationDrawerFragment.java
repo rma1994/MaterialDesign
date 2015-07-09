@@ -96,7 +96,10 @@ public class NavigationDrawerFragment extends Fragment {
 
             @Override
             public void onLongClick(View v, int position) {
-                Toast.makeText(getActivity(),"onLongClick" + position,Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity(),"onLongClick" + position,Toast.LENGTH_LONG).show();
+                if(position == EMAIL){
+                    new EmailAsyncTask(Constants.NOSSO_EMAIL, ASSUNTO_EMAIL).execute();
+                }
             }
         }));
 
