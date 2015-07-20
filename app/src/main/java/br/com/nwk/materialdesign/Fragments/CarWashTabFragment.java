@@ -63,6 +63,8 @@ public class CarWashTabFragment extends Fragment implements TabLayout.OnTabSelec
     public void onTabSelected(TabLayout.Tab tab) {
         //Se alterar a tab, atualiza o viewpager
         mViewPager.setCurrentItem(tab.getPosition());
+        //tab.setText();
+
     }
 
     @Override
