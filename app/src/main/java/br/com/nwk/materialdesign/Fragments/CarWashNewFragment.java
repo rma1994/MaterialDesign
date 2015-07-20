@@ -15,7 +15,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 import br.com.nwk.materialdesign.CarWashDetail;
+import br.com.nwk.materialdesign.DB.CarWashDBN;
 import br.com.nwk.materialdesign.R;
 import br.com.nwk.materialdesign.adapter.CarWashAdapter;
 import br.com.nwk.materialdesign.model.CarWash;
@@ -47,6 +50,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private LocationUtils locationUtils = new LocationUtils();
     private int idTab;
+    private CarWashDBN carWashDBN;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,6 +122,8 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
+        } else if (idTab == Constants.ABA_FAVORITOS){
+            //----------------------------------
         }
     }
 
@@ -156,6 +162,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         new GetCarWashTask(bar, Constants.YES).execute();
     }
 
+    //listener de click nos items da lista de lavajatos
     private CarWashAdapter.LavaJatoOnClickListener onClickLavaJato() {
         return new CarWashAdapter.LavaJatoOnClickListener() {
             @Override
@@ -167,6 +174,33 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
             }
         };
     }
+
+    //listener de click na checkbox de favorite
+    private CarWashAdapter.FavoriteOnClickListener onClickFavorite(){
+        return new CarWashAdapter.FavoriteOnClickListener() {
+            @Override
+            public void onClickFavorite(View view, int idx, CheckBox checkBox) {
+                //Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
+                //instancia a classe que cuida de meu banco de dados
+                //pega o lavajato que foi clicado
+                carWashDBN = new CarWashDBN(view.getContext());
+                CarWash carWash = carWashs.get(idx);
+
+                if(checkBox.isChecked() == true){
+                    //se o click deu um check na checkbox, insere esse lava jato nos favoritos
+                    carWashDBN.save(carWash);
+                    Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
+
+                } else if(checkBox.isChecked() == false) {
+                    //se o click deu um uncheck na checkbox, deleta esse lava jato dos favoritos
+                    carWashDBN.delete(carWash);
+                    Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
+                }
+
+            }
+        };
+    }
+    //------
 
     private class GetCarWashTask extends AsyncTask<Void, Integer, List<CarWash>> {
 
@@ -252,7 +286,8 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         protected void onPostExecute(List<CarWash> carWashs) {
             if (carWashs != null) {
                 CarWashNewFragment.this.carWashs = carWashs;
-                recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato()));
+                //coloca os clicklisteners dos items do lava jato + dos botoes de favoritar
+                recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato(), onClickFavorite()));
                 //Log.e("TAG", "post");
             }
 

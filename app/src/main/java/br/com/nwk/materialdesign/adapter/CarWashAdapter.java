@@ -26,13 +26,15 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
     //private CarWashOnClickListener carWashOnClickListener;
     //private LayoutInflater inflater;
     private LavaJatoOnClickListener lavaJatoOnClickListener;
+    private FavoriteOnClickListener favoriteOnClickListener;
 
 
-    public CarWashAdapter(Context context, List<CarWash> data, LavaJatoOnClickListener lavaJatoOnClickListener){
+    public CarWashAdapter(Context context, List<CarWash> data, LavaJatoOnClickListener lavaJatoOnClickListener, FavoriteOnClickListener favoriteOnClickListener){
         //inflater = LayoutInflater.from(context);
         this.context = context;
         this.data = data;
         this.lavaJatoOnClickListener = lavaJatoOnClickListener;
+        this.favoriteOnClickListener = favoriteOnClickListener;
     }
 
     @Override
@@ -61,7 +63,17 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    lavaJatoOnClickListener.onClickLavaJato(holder.itemView,position);
+                    lavaJatoOnClickListener.onClickLavaJato(holder.itemView, position);
+                }
+            });
+        }
+
+        //listener do botao favorito
+        if(favoriteOnClickListener != null){
+            holder.mFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    favoriteOnClickListener.onClickFavorite(holder.itemView, position, holder.mFavorite);
                 }
             });
         }
@@ -69,6 +81,10 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
 
     public interface LavaJatoOnClickListener{
         public void onClickLavaJato(View view, int idx);
+    }
+
+    public interface FavoriteOnClickListener{
+        public void onClickFavorite(View view, int idx, CheckBox checkBox);
     }
 
     @Override
@@ -81,6 +97,7 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
         TextView mNome;
         TextView mTelefone;
         TextView mDist;
+        CheckBox mFavorite;
         ImageView mIcon;
         //CheckBox mFavorite;
         //Drawable[] d;
@@ -91,7 +108,7 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
             mTelefone = (TextView) itemView.findViewById(R.id.value_tel_list);
             mDist = (TextView) itemView.findViewById(R.id.value_distancia_list);
             mIcon = (ImageView) itemView.findViewById(R.id.image_list);
-
+            mFavorite = (CheckBox) itemView.findViewById(R.id.checkbox_favorite);
             /*mFavorite = (CheckBox) itemView.findViewById(R.id.checkbox_tradicional);
             d = mFavorite.getCompoundDrawables();
             d[0].setBounds(0,0, 24,24);

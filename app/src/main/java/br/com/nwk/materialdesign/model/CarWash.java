@@ -31,6 +31,7 @@ public class CarWash implements Serializable {
     public String telefone;
     public double distancia;
 
+    //construtor que desine todos atributos
     public CarWash(JSONObject object) {
         id = getInt(object,"_id");
         nome = getString(object, "nome");
@@ -49,6 +50,11 @@ public class CarWash implements Serializable {
         longitude = getDouble(object, "longitude");
         //distancia = getString(object,"_id") + "Km";
         endereco = rua + ", " + numero + " - " + bairro + "\n" + cidade + " - " + estado + "\n" + cep;
+    }
+
+    //para uso onde não necessito um construtor
+    public CarWash() {
+
     }
 
     private String getString(JSONObject object, String objectName){
