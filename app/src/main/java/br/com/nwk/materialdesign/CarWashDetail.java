@@ -17,7 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import br.com.nwk.materialdesign.model.LavaJato;
+import br.com.nwk.materialdesign.model.CarWash;
 import br.com.nwk.materialdesign.model.User;
 import br.com.nwk.materialdesign.util.Constants;
 
@@ -42,7 +42,7 @@ public class CarWashDetail extends AppCompatActivity {
     private RelativeLayout mLayoutTelefone;
     private RelativeLayout mLayoutEmail;
     private RelativeLayout mLayoutEndereco;
-    private LavaJato lj;
+    private CarWash lj;
     //private LjDetailsOnClickListener ljDetailsOnClickListener;
 
     @Override
@@ -115,7 +115,7 @@ public class CarWashDetail extends AppCompatActivity {
         //intent com as informações do lava jato
         Intent intent = getIntent();
         if(intent!=null){
-            LavaJato lj = (LavaJato) getIntent().getSerializableExtra(Constants.LAVA_JATO);
+            CarWash lj = (CarWash) getIntent().getSerializableExtra(Constants.LAVA_JATO);
             setLavaJato(lj);
         }
     }
@@ -150,7 +150,7 @@ public class CarWashDetail extends AppCompatActivity {
     }
 
 
-    private void setLavaJato(LavaJato lj){
+    private void setLavaJato(CarWash lj){
         this.lj = lj;
 
         mNome.setText(lj.nome);

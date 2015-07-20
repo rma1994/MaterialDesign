@@ -1,17 +1,15 @@
 package br.com.nwk.materialdesign.util;
 
-import android.util.Log;
-
 import java.util.Comparator;
 
-import br.com.nwk.materialdesign.model.LavaJato;
+import br.com.nwk.materialdesign.model.CarWash;
 
 /**
  * Created by rma19_000 on 07/07/2015.
  */
-public class CustomComparator implements Comparator<LavaJato>{
+public class CustomComparator implements Comparator<CarWash>{
     @Override
-    public int compare(LavaJato lhs, LavaJato rhs) {
+    public int compare(CarWash lhs, CarWash rhs) {
         //double lhDistancia = Double.parseDouble(lhs.distancia);
         //double rhDistancia = Double.parseDouble(rhs.distancia);
         //return Double.compare(lhs.distancia,lhs.distancia);

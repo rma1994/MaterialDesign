@@ -11,7 +11,7 @@ import java.io.Serializable;
 /**
  * Created by rma19_000 on 02/07/2015.
  */
-public class LavaJato implements Serializable {
+public class CarWash implements Serializable {
     public int iconeClassificacao;
     public int id;
     public String nome;
@@ -31,7 +31,7 @@ public class LavaJato implements Serializable {
     public String telefone;
     public double distancia;
 
-    public LavaJato (JSONObject object) {
+    public CarWash(JSONObject object) {
         id = getInt(object,"_id");
         nome = getString(object, "nome");
         rua = getString(object, "rua");

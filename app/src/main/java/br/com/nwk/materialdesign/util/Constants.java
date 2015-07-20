@@ -1,7 +1,5 @@
 package br.com.nwk.materialdesign.util;
 
-import br.com.nwk.materialdesign.model.LavaJato;
-
 /**
  * Created by rma19_000 on 03/07/2015.
  */

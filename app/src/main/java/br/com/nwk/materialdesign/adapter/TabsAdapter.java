@@ -33,9 +33,9 @@ public class TabsAdapter extends FragmentPagerAdapter{
     public Fragment getItem(int position) {
         Bundle args = new Bundle();
         if (position == 0){
-            args.putInt("nome", Constants.ABA_LAVA_JATO);
+            args.putInt("idTab", Constants.ABA_LAVA_JATO);
         } else {
-            args.putInt("nome", Constants.ABA_FAVORITOS);
+            args.putInt("idTab", Constants.ABA_FAVORITOS);
         }
 
         Fragment f = new CarWashNewFragment();
@@ -70,5 +70,4 @@ public class TabsAdapter extends FragmentPagerAdapter{
 
         return spannableString;*/
     }
-
 }

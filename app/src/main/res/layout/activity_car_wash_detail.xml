@@ -224,7 +224,7 @@
                         android:layout_below="@id/checkbox_reuso"
                         android:layout_marginLeft="72dp"
                         android:clickable="false"
-                        android:text="@string/traditional" />
+                        android:text="@string/traditional"/>
 
 
                 </RelativeLayout>

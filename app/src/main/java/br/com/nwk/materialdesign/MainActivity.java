@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         private ActionBarDrawerToggle mDrawerToggle;
         private DrawerLayout mDrawerLayout;
         private View lavajatoView = null;
-        private List<LavaJato> lavaJato;
+        private List<CarWash> lavaJato;
         private SwipeRefreshLayout swipeRefreshLayout;
         private ProgressBar bar;
 
@@ -349,8 +349,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             return new CarWashAdapter.LavaJatoOnClickListener() {
                 @Override
                 public void onClickLavaJato(View view, int idx) {
-                    LavaJato c = lavaJato.get(idx);
-                    //Toast.makeText(getActivity(),"LavaJato: " + c.id,Toast.LENGTH_SHORT).show();
+                    CarWash c = lavaJato.get(idx);
+                    //Toast.makeText(getActivity(),"CarWash: " + c.id,Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(view.getContext(), CarWashDetail.class);
                     intent.putExtra(Constants.LAVA_JATO, c);
@@ -359,8 +359,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             };
         }
 
-        /*public static List<LavaJato> getData(){
-            List<LavaJato> data = new ArrayList<>();
+        /*public static List<CarWash> getData(){
+            List<CarWash> data = new ArrayList<>();
             int icons[] = {R.mipmap.ic_launcher};
             String[] nome = {"Heisenberg"};
             String[] telefone = {"(19) 3322-1155"};
@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             //pega as informações necessarias e adiciona em nossa lista chamada data, depois retorna essa data;
             for(int i=0;/*i<nome.length && i<icons.length;i<10;i++){
-                LavaJato current = new LavaJato();
+                CarWash current = new CarWash();
                 current.iconeClassificacao = icons[0];
                 current.nome = nome[0];
                 current.telefone = telefone[0];
@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             return data;
         }*/
         /*
-        private class GetCarWashTask extends AsyncTask<Void, Integer, List<LavaJato>> {
+        private class GetCarWashTask extends AsyncTask<Void, Integer, List<CarWash>> {
 
             private ProgressBar bar;
             int showBar;
@@ -399,15 +399,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
 
             @Override
-            protected List<LavaJato> doInBackground(Void... params) {
+            protected List<CarWash> doInBackground(Void... params) {
 
                 //se conecta a internet para pegar as informações dos lavajatos
                 NetworkUtils nwk = new NetworkUtils();
                 String jsonStr = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_EWASH, Constants.CARWASH);
-                List<LavaJato> listEcologic = new ArrayList<>();
-                List<LavaJato> listReuse = new ArrayList<>();
-                List<LavaJato> listTrad = new ArrayList<>();
-                List<LavaJato> listFinal = new ArrayList<>();
+                List<CarWash> listEcologic = new ArrayList<>();
+                List<CarWash> listReuse = new ArrayList<>();
+                List<CarWash> listTrad = new ArrayList<>();
+                List<CarWash> listFinal = new ArrayList<>();
                 //Log.e("TAG","back");
 
                 //Extrai as informações do meu jsonarray
@@ -417,7 +417,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         JSONArray jsonOArray = new JSONArray(jsonStr);
                         for (int i = 0; i < jsonOArray.length(); i++) {
                             JSONObject jsonObject = jsonOArray.getJSONObject(i);
-                            LavaJato lavaJato = new LavaJato(jsonObject);
+                            CarWash lavaJato = new CarWash(jsonObject);
 
                             //Aqui o aplicativo se conecta com a GoogleMatrixAPI e pega a distancia de cada um dos lava jatos para o usuario.
                             //String path = "json?origins=-22.831367-47.269207&destinations=-22.832593,-47.271755&mode=DRIVING&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
@@ -462,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
 
             @Override
-            protected void onPostExecute(List<LavaJato> lavaJatos) {
+            protected void onPostExecute(List<CarWash> lavaJatos) {
                 if (lavaJatos != null) {
                     User.lavaJato = lavaJatos;
                     CarWashListFragment.this.lavaJato = lavaJatos;

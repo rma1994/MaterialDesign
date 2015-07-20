@@ -1,31 +1,34 @@
 package br.com.nwk.materialdesign.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
 import br.com.nwk.materialdesign.R;
-import br.com.nwk.materialdesign.model.LavaJato;
+import br.com.nwk.materialdesign.model.CarWash;
+import br.com.nwk.materialdesign.util.ToPixels;
 
 /**
  * Created by rma19_000 on 02/07/2015.
  */
 public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashViewHolder> {
     protected static final String TAG = "eWash";
-    private final List<LavaJato> data;
+    private final List<CarWash> data;
     private final Context context;
     //private CarWashOnClickListener carWashOnClickListener;
     //private LayoutInflater inflater;
     private LavaJatoOnClickListener lavaJatoOnClickListener;
 
 
-    public CarWashAdapter(Context context, List<LavaJato> data, LavaJatoOnClickListener lavaJatoOnClickListener){
+    public CarWashAdapter(Context context, List<CarWash> data, LavaJatoOnClickListener lavaJatoOnClickListener){
         //inflater = LayoutInflater.from(context);
         this.context = context;
         this.data = data;
@@ -42,7 +45,7 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
 
     @Override
     public void onBindViewHolder(final CarWashViewHolder holder, final int position) {
-        LavaJato current = data.get(position);
+        CarWash current = data.get(position);
         holder.mNome.setText(current.nome);
         holder.mTelefone.setText(current.telefone);
         holder.mIcon.setImageResource(current.iconeClassificacao);
@@ -79,6 +82,8 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
         TextView mTelefone;
         TextView mDist;
         ImageView mIcon;
+        //CheckBox mFavorite;
+        //Drawable[] d;
 
         public CarWashViewHolder(View itemView) {
             super(itemView);
@@ -87,6 +92,10 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
             mDist = (TextView) itemView.findViewById(R.id.value_distancia_list);
             mIcon = (ImageView) itemView.findViewById(R.id.image_list);
 
+            /*mFavorite = (CheckBox) itemView.findViewById(R.id.checkbox_tradicional);
+            d = mFavorite.getCompoundDrawables();
+            d[0].setBounds(0,0, 24,24);
+            mFavorite.setCompoundDrawables(d[0],null,null,null);*/
         }
     }
 

@@ -27,7 +27,7 @@ import java.util.List;
 import br.com.nwk.materialdesign.CarWashDetail;
 import br.com.nwk.materialdesign.R;
 import br.com.nwk.materialdesign.adapter.CarWashAdapter;
-import br.com.nwk.materialdesign.model.LavaJato;
+import br.com.nwk.materialdesign.model.CarWash;
 import br.com.nwk.materialdesign.model.User;
 import br.com.nwk.materialdesign.util.Constants;
 import br.com.nwk.materialdesign.util.CustomComparator;
@@ -41,7 +41,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
 
     private static final int LOCALIZACAO_LIBERADA = 100;
     protected RecyclerView recyclerView;
-    private List<LavaJato> lavaJatos;
+    private List<CarWash> carWashs;
     private LinearLayoutManager mLayoutManager;
     private ProgressBar bar;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -137,6 +137,8 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         }
     }
 
+
+
     private SwipeRefreshLayout.OnRefreshListener onRefreshListener(ProgressBar bar) {
         final ProgressBar pbar = bar;
 
@@ -158,7 +160,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         return new CarWashAdapter.LavaJatoOnClickListener() {
             @Override
             public void onClickLavaJato(View view, int idx) {
-                LavaJato lj = lavaJatos.get(idx);
+                CarWash lj = carWashs.get(idx);
                 Intent intent = new Intent(view.getContext(), CarWashDetail.class);
                 intent.putExtra(Constants.LAVA_JATO, lj);
                 startActivity(intent);
@@ -166,7 +168,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         };
     }
 
-    private class GetCarWashTask extends AsyncTask<Void, Integer, List<LavaJato>> {
+    private class GetCarWashTask extends AsyncTask<Void, Integer, List<CarWash>> {
 
         private ProgressBar bar;
         int showBar;
@@ -185,14 +187,14 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         }
 
         @Override
-        protected List<LavaJato> doInBackground(Void... params) {
+        protected List<CarWash> doInBackground(Void... params) {
             //se conecta a internet para pegar as informações dos lavajatos
             NetworkUtils nwk = new NetworkUtils();
             String jsonStr = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_EWASH, Constants.CARWASH);
-            List<LavaJato> listEcologic = new ArrayList<>();
-            List<LavaJato> listReuse = new ArrayList<>();
-            List<LavaJato> listTrad = new ArrayList<>();
-            List<LavaJato> listFinal = new ArrayList<>();
+            List<CarWash> listEcologic = new ArrayList<>();
+            List<CarWash> listReuse = new ArrayList<>();
+            List<CarWash> listTrad = new ArrayList<>();
+            List<CarWash> listFinal = new ArrayList<>();
             //Log.e("TAG","back");
 
             //Extrai as informações do meu jsonarray
@@ -202,23 +204,23 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                     JSONArray jsonOArray = new JSONArray(jsonStr);
                     for (int i = 0; i < jsonOArray.length(); i++) {
                         JSONObject jsonObject = jsonOArray.getJSONObject(i);
-                        LavaJato lavaJato = new LavaJato(jsonObject);
+                        CarWash carWash = new CarWash(jsonObject);
 
                         //Aqui o aplicativo se conecta com a GoogleMatrixAPI e pega a distancia de cada um dos lava jatos para o usuario.
                         //String path = "json?origins=-22.831367-47.269207&destinations=-22.832593,-47.271755&mode=DRIVING&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
-                        String path = "json?origins=" + User.location.getLatitude() + "," + User.location.getLongitude() + "&destinations=" + lavaJato.latitude + "," + lavaJato.longitude + "&mode=DRIVING&units=metric&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
+                        String path = "json?origins=" + User.location.getLatitude() + "," + User.location.getLongitude() + "&destinations=" + carWash.latitude + "," + carWash.longitude + "&mode=DRIVING&units=metric&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
                         String jsonDistancia = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_GOOGLE_API, path);
                         //Log.e("jsondistancia",jsonDistancia);
                         JSONObject jsonObjectDistancia = new JSONObject(jsonDistancia);
-                        lavaJato.setDistance(jsonObjectDistancia);
+                        carWash.setDistance(jsonObjectDistancia);
 
                         //Adiciona o lava jato em sua respectiva lista
-                        if (lavaJato.ecologica == Constants.YES) {
-                            listEcologic.add(lavaJato);
-                        } else if (lavaJato.reuso == Constants.YES) {
-                            listReuse.add(lavaJato);
+                        if (carWash.ecologica == Constants.YES) {
+                            listEcologic.add(carWash);
+                        } else if (carWash.reuso == Constants.YES) {
+                            listReuse.add(carWash);
                         } else {
-                            listTrad.add(lavaJato);
+                            listTrad.add(carWash);
                         }
                         //publishProgress((int) ((i/(float) jsonOArray.length())*100));
                     }
@@ -247,10 +249,10 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<LavaJato> lavaJatos) {
-            if (lavaJatos != null) {
-                CarWashNewFragment.this.lavaJatos = lavaJatos;
-                recyclerView.setAdapter(new CarWashAdapter(getActivity(), lavaJatos, onClickLavaJato()));
+        protected void onPostExecute(List<CarWash> carWashs) {
+            if (carWashs != null) {
+                CarWashNewFragment.this.carWashs = carWashs;
+                recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato()));
                 //Log.e("TAG", "post");
             }
 
