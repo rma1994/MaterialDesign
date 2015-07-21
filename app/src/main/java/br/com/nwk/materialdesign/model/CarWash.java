@@ -81,6 +81,7 @@ public class CarWash implements Serializable {
             try{
                 if(!object.isNull(objectName)){
                     result = object.getInt(objectName);
+                    //Log.e("model", result+"");
                     //System.out.println(object.getString(objectName));
                 }
 

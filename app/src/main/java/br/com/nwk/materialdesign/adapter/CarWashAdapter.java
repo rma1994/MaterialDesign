@@ -58,12 +58,12 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
             holder.mDist.setText("Erro ao calcular");
         }
 
-
+        //LISTENER para abrir os detalhes
         if(lavaJatoOnClickListener != null){
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    lavaJatoOnClickListener.onClickLavaJato(holder.itemView, position);
+                    lavaJatoOnClickListener.onClickLavaJato(holder.itemView, position, data);
                 }
             });
         }
@@ -73,18 +73,18 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
             holder.mFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    favoriteOnClickListener.onClickFavorite(holder.itemView, position, holder.mFavorite);
+                    favoriteOnClickListener.onClickFavorite(holder.itemView, position, holder.mFavorite, data);
                 }
             });
         }
     }
 
     public interface LavaJatoOnClickListener{
-        public void onClickLavaJato(View view, int idx);
+        public void onClickLavaJato(View view, int idx, List<CarWash> list);
     }
 
     public interface FavoriteOnClickListener{
-        public void onClickFavorite(View view, int idx, CheckBox checkBox);
+        public void onClickFavorite(View view, int idx, CheckBox checkBox, List<CarWash> list);
     }
 
     @Override

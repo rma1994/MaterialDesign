@@ -45,6 +45,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
     private static final int LOCALIZACAO_LIBERADA = 100;
     protected RecyclerView recyclerView;
     private List<CarWash> carWashs;
+    private List<CarWash> favoritos;
     private LinearLayoutManager mLayoutManager;
     private ProgressBar bar;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -122,8 +123,18 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
+
         } else if (idTab == Constants.ABA_FAVORITOS){
-            //----------------------------------
+            carWashDBN = new CarWashDBN(getActivity());
+            favoritos = new ArrayList<CarWash>();
+
+            if (favoritos != null) {
+                this.favoritos = carWashDBN.findAll();
+
+                recyclerView.setAdapter(new CarWashAdapter(getActivity(), favoritos, onClickLavaJato(), onClickFavorite()));
+                Log.e("a", favoritos.get(0).id + "");
+                //Log.e("TAG", "post");
+            }
         }
     }
 
@@ -166,8 +177,8 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
     private CarWashAdapter.LavaJatoOnClickListener onClickLavaJato() {
         return new CarWashAdapter.LavaJatoOnClickListener() {
             @Override
-            public void onClickLavaJato(View view, int idx) {
-                CarWash lj = carWashs.get(idx);
+            public void onClickLavaJato(View view, int idx, List<CarWash> data) {
+                CarWash lj = data.get(idx);
                 Intent intent = new Intent(view.getContext(), CarWashDetail.class);
                 intent.putExtra(Constants.LAVA_JATO, lj);
                 startActivity(intent);
@@ -179,12 +190,12 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
     private CarWashAdapter.FavoriteOnClickListener onClickFavorite(){
         return new CarWashAdapter.FavoriteOnClickListener() {
             @Override
-            public void onClickFavorite(View view, int idx, CheckBox checkBox) {
+            public void onClickFavorite(View view, int idx, CheckBox checkBox, List<CarWash> data) {
                 //Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
                 //instancia a classe que cuida de meu banco de dados
                 //pega o lavajato que foi clicado
                 carWashDBN = new CarWashDBN(view.getContext());
-                CarWash carWash = carWashs.get(idx);
+                CarWash carWash = data.get(idx);
 
                 if(checkBox.isChecked() == true){
                     //se o click deu um check na checkbox, insere esse lava jato nos favoritos

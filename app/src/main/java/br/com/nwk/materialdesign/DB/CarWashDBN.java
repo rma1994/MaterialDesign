@@ -60,19 +60,22 @@ public class CarWashDBN extends SQLiteOpenHelper{
             values.put("telefone",carWash.telefone);
             //values.put("",);
 
-            if (id != 0){
+            /*if (id !=0){
                 String _id = String.valueOf(carWash.id);
                 String[] whereArgs = new String[]{_id};
                 //update carro set values = ... where _id=?
                 int count = db.update("carwash", values, "_id=?", whereArgs);
                 Log.i(TAG,"Atualizou [" + count + "] registro");
+
+                Log.e("model",_id);
                 return count;
-            } else {
+            } else {*/
                 //insert into carwash values(..._
                 id = db.insert("carwash", "", values);
                 Log.i(TAG,"Inseriu [" + id + "] registro");
+                //Log.e("model", id+"");
                 return id;
-            }
+            //}
         } finally {
             db.close();
         }
@@ -124,8 +127,6 @@ public class CarWashDBN extends SQLiteOpenHelper{
                 carWash.telefone = c.getString(c.getColumnIndex("telefone"));
                 carWash.latitude = c.getDouble(c.getColumnIndex("latitude"));
                 carWash.longitude = c.getDouble(c.getColumnIndex("longitude"));
-
-
 
                 carWashList.add(carWash);
             } while (c.moveToNext());
