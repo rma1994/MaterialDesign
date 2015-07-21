@@ -30,6 +30,7 @@ public class CarWash implements Serializable {
     public double longitude;
     public String telefone;
     public double distancia;
+    public boolean favoritado = false;
 
     //construtor que desine todos atributos
     public CarWash(JSONObject object) {

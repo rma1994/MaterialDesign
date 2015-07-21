@@ -32,7 +32,7 @@ public class CarWashTabFragment extends Fragment implements TabLayout.OnTabSelec
 
         //ViewPager
         mViewPager = (ViewPager) view.findViewById(R.id.viewPager);
-        mViewPager.setOffscreenPageLimit(2);
+        //mViewPager.setOffscreenPageLimit(2);
         mViewPager.setAdapter(new TabsAdapter(getActivity(), getChildFragmentManager()));
 
         //Tabs

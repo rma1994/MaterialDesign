@@ -21,12 +21,15 @@ import br.com.nwk.materialdesign.util.ToPixels;
  * Created by rma19_000 on 08/07/2015.
  */
 public class TabsAdapter extends FragmentPagerAdapter{
+    public Fragment carWash = new CarWashNewFragment();
+    public Fragment carWashFavorite = new CarWashNewFragment();
     private Context context;
     private ToPixels toPixels = new ToPixels();
 
     public TabsAdapter(Context context,FragmentManager fm) {
         super(fm);
         this.context = context;
+
     }
 
     @Override
@@ -34,14 +37,15 @@ public class TabsAdapter extends FragmentPagerAdapter{
         Bundle args = new Bundle();
         if (position == 0){
             args.putInt("idTab", Constants.ABA_LAVA_JATO);
+            carWash.setArguments(args);
+            return carWash;
+
         } else {
             args.putInt("idTab", Constants.ABA_FAVORITOS);
+            carWashFavorite.setArguments(args);
+            return carWashFavorite;
+
         }
-
-        Fragment f = new CarWashNewFragment();
-        f.setArguments(args);
-
-        return f;
     }
 
     @Override

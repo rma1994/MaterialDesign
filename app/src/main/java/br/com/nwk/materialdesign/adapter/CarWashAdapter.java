@@ -23,10 +23,10 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
     protected static final String TAG = "eWash";
     private final List<CarWash> data;
     private final Context context;
-    //private CarWashOnClickListener carWashOnClickListener;
-    //private LayoutInflater inflater;
     private LavaJatoOnClickListener lavaJatoOnClickListener;
     private FavoriteOnClickListener favoriteOnClickListener;
+    //private CarWashOnClickListener carWashOnClickListener;
+    //private LayoutInflater inflater;
 
 
     public CarWashAdapter(Context context, List<CarWash> data, LavaJatoOnClickListener lavaJatoOnClickListener, FavoriteOnClickListener favoriteOnClickListener){
@@ -51,6 +51,7 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
         holder.mNome.setText(current.nome);
         holder.mTelefone.setText(current.telefone);
         holder.mIcon.setImageResource(current.iconeClassificacao);
+        holder.mFavorite.setChecked(current.favoritado);
 
         if(current.distancia != 0.000) {
             holder.mDist.setText(String.valueOf(current.distancia) + " km");
