@@ -52,6 +52,7 @@ public class CarWashTabFragment extends Fragment implements TabLayout.OnTabSelec
         //Listener Para tratar os eventos de cliques nas tabs
         tabLayout.setOnTabSelectedListener(this);
 
+
         //Se mudar o view pager atualiza a tab selecionada
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
