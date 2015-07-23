@@ -29,7 +29,6 @@ public class TabsAdapter extends FragmentPagerAdapter{
     public TabsAdapter(Context context,FragmentManager fm) {
         super(fm);
         this.context = context;
-
     }
 
     @Override

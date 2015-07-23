@@ -45,6 +45,7 @@ import br.com.nwk.materialdesign.util.NetworkUtils;
 public class CarWashNewFragment extends android.support.v4.app.Fragment {
 
     private static final int LOCALIZACAO_LIBERADA = 100;
+    private static final String ASYNCTASK_TAG = "ASyncTask";
     protected RecyclerView recyclerView;
     private List<CarWash> carWashs;
     private List<CarWash> favoritos;
@@ -147,6 +148,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         }
     }
 
+    //atualiza a lista de lava jatos ao deslizar o dedo para baixo das abas
     private SwipeRefreshLayout.OnRefreshListener onRefreshListener(ProgressBar bar) {
         final ProgressBar pbar = bar;
 
@@ -164,11 +166,12 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         new GetCarWashTask(bar, Constants.YES).execute();
     }
 
-    private void setFavoriteListDB(Context context){
+    //atualiza a lista de favoritos.
+    public void setFavoriteListDB(Context context){
         carWashDBN = new CarWashDBN(context);
         favoritos = new ArrayList<CarWash>();
 
-        if (favoritos != null) {
+        if (favoritos != null && idTab == Constants.ABA_FAVORITOS) {
             this.favoritos = carWashDBN.findAll();
 
             recyclerView.setAdapter(new CarWashAdapter(context, favoritos, onClickLavaJato(), onClickFavorite()));
@@ -209,12 +212,12 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                     //se o click deu um check na checkbox, insere esse lava jato nos favoritos
                     carWashDBN.save(carWash);
                     Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
-                    //setFavoriteListDB(TabsAdapter.carWashFavorite.getActivity());
+                    setFavoriteListDB(getActivity());
                 } else if(checkBox.isChecked() == false) {
                     //se o click deu um uncheck na checkbox, deleta esse lava jato dos favoritos
                     carWashDBN.delete(carWash);
                     Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
-                    //setFavoriteListDB(TabsAdapter.carWashFavorite.getActivity());
+                    setFavoriteListDB(getActivity());
                 }
 
             }
@@ -244,6 +247,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         protected List<CarWash> doInBackground(Void... params) {
             //se conecta a internet para pegar as informações dos lavajatos
             NetworkUtils nwk = new NetworkUtils();
+            Log.d(ASYNCTASK_TAG, "conectando ao banco de dados online...");
             String jsonStr = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_EWASH, Constants.CARWASH);
             List<CarWash> listEcologic = new ArrayList<>();
             List<CarWash> listReuse = new ArrayList<>();
@@ -256,17 +260,24 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                 try {
                     //Thread.sleep(1500);
                     JSONArray jsonOArray = new JSONArray(jsonStr);
+                    Log.d(ASYNCTASK_TAG, "coletando dados dos lava jatos...");
                     for (int i = 0; i < jsonOArray.length(); i++) {
                         JSONObject jsonObject = jsonOArray.getJSONObject(i);
                         CarWash carWash = new CarWash(jsonObject);
 
                         //Aqui o aplicativo se conecta com a GoogleMatrixAPI e pega a distancia de cada um dos lava jatos para o usuario.
                         //String path = "json?origins=-22.831367-47.269207&destinations=-22.832593,-47.271755&mode=DRIVING&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
+                        Log.d(ASYNCTASK_TAG, "coletando distancia do lava jato [ "+ carWash.id +" ]" );
                         String path = "json?origins=" + User.location.getLatitude() + "," + User.location.getLongitude() + "&destinations=" + carWash.latitude + "," + carWash.longitude + "&mode=DRIVING&units=metric&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
                         String jsonDistancia = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_GOOGLE_API, path);
                         //Log.e("jsondistancia",jsonDistancia);
                         JSONObject jsonObjectDistancia = new JSONObject(jsonDistancia);
                         carWash.setDistance(jsonObjectDistancia);
+
+                        //checa se o lava jato ja foi favoritado
+                        Log.d(ASYNCTASK_TAG, "verificando se o lava jato [ "+ carWash.id +" ] ja foi favoritado" );
+                        carWashDBN = new CarWashDBN(getActivity());
+                        carWash.favoritado = carWashDBN.exist(carWash);
 
                         //Adiciona o lava jato em sua respectiva lista
                         if (carWash.ecologica == Constants.YES) {
@@ -280,6 +291,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                     }
 
                     //organiza as listas de acordo com o local mais proximo
+                    Log.d(ASYNCTASK_TAG, "organizando listas..." );
                     Collections.sort(listEcologic, new CustomComparator());
                     Collections.sort(listReuse, new CustomComparator());
                     Collections.sort(listTrad, new CustomComparator());
@@ -305,6 +317,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         @Override
         protected void onPostExecute(List<CarWash> carWashs) {
             if (carWashs != null) {
+                Log.d(ASYNCTASK_TAG, "exibindo lista..." );
                 CarWashNewFragment.this.carWashs = carWashs;
                 //coloca os clicklisteners dos items do lava jato + dos botoes de favoritar
                 recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato(), onClickFavorite()));

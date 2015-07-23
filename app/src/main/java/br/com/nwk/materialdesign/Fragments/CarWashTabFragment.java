@@ -32,7 +32,7 @@ public class CarWashTabFragment extends Fragment implements TabLayout.OnTabSelec
 
         //ViewPager
         mViewPager = (ViewPager) view.findViewById(R.id.viewPager);
-        //mViewPager.setOffscreenPageLimit(2);
+        mViewPager.setOffscreenPageLimit(2);
         mViewPager.setAdapter(new TabsAdapter(getActivity(), getChildFragmentManager()));
 
         //Tabs
@@ -59,12 +59,18 @@ public class CarWashTabFragment extends Fragment implements TabLayout.OnTabSelec
         return view;
     }
 
-
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
+        //Caso a pessoa clique na segunda aba, roda a função no fragment de favoritos que atualiza
+        //a lista de favoritos, assim esta lista sempre exibira uma lista atualizada
+        if(tab.getPosition() == 1){
+            TabsAdapter adapter = (TabsAdapter) mViewPager.getAdapter();
+            CarWashNewFragment fragment = (CarWashNewFragment) adapter.carWashFavorite;
+            fragment.setFavoriteListDB(getActivity());
+
+        }
         //Se alterar a tab, atualiza o viewpager
         mViewPager.setCurrentItem(tab.getPosition());
-        //tab.setText();
 
     }
 

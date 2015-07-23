@@ -134,4 +134,19 @@ public class CarWashDBN extends SQLiteOpenHelper{
         }
         return carWashList;
     }
+
+    //chega se o lava jato existe no banco de dados.
+    public boolean exist(CarWash carWash){
+        boolean result = false;
+        String id = String.valueOf(carWash.id);
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = db.query("carwash", new String[]{"_id"}, "_id=?", new String[]{id}, null, null, null);
+
+        //Se encontrou
+        if(c.getCount() > 0){
+            result = true;
+            return result;
+        }
+        return result;
+    }
 }
