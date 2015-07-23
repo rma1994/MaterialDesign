@@ -127,6 +127,7 @@ public class CarWashDBN extends SQLiteOpenHelper{
                 carWash.telefone = c.getString(c.getColumnIndex("telefone"));
                 carWash.latitude = c.getDouble(c.getColumnIndex("latitude"));
                 carWash.longitude = c.getDouble(c.getColumnIndex("longitude"));
+                carWash.endereco = carWash.rua + ", " + carWash.numero + " - " + carWash.bairro + "\n" + carWash.cidade + " - " + carWash.estado + "\n" + carWash.cep;
                 carWash.favoritado = true;
 
                 carWashList.add(carWash);
