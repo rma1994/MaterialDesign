@@ -46,6 +46,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
 
     private static final int LOCALIZACAO_LIBERADA = 100;
     private static final String ASYNCTASK_TAG = "ASyncTask";
+    private static final String ATUALIZACAO_FAVORITOS = "Att Favorito";
     protected RecyclerView recyclerView;
     private List<CarWash> carWashs;
     private List<CarWash> favoritos;
@@ -172,11 +173,29 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         favoritos = new ArrayList<CarWash>();
 
         if (favoritos != null && idTab == Constants.ABA_FAVORITOS) {
+            Log.d(ATUALIZACAO_FAVORITOS,"atualizando lista de favoritos...");
             this.favoritos = carWashDBN.findAll();
-
             recyclerView.setAdapter(new CarWashAdapter(context, favoritos, onClickLavaJato(), onClickFavorite()));
+            Log.d(ATUALIZACAO_FAVORITOS, "lista atualizada");
             //Log.e("a", favoritos.get(0).id + "");
             //Log.e("TAG", "post");
+        }
+    }
+
+    //atualiza  alista principal de lava jatos
+    public void reloadCarWashList(){
+        if(carWashs != null && Constants.ABA_LAVA_JATO == idTab){
+            Log.d(ATUALIZACAO_FAVORITOS,"atualizando lista principal...");
+            List<CarWash> result = new ArrayList<CarWash>();
+            carWashDBN = new CarWashDBN(getActivity());
+
+            //checa se o lava jato foi favoritado para atualizar a lista principal
+            for(CarWash carWash : carWashs) {
+                carWash.favoritado = carWashDBN.exist(carWash);
+                result.add(carWash);
+            }
+            recyclerView.setAdapter(new CarWashAdapter(getActivity(), result, onClickLavaJato(), onClickFavorite()));
+            Log.d(ATUALIZACAO_FAVORITOS, "lista atualizada");
         }
     }
 

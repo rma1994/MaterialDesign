@@ -4,6 +4,7 @@ package br.com.nwk.materialdesign.Fragments;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,12 +64,19 @@ public class CarWashTabFragment extends Fragment implements TabLayout.OnTabSelec
     public void onTabSelected(TabLayout.Tab tab) {
         //Caso a pessoa clique na segunda aba, roda a função no fragment de favoritos que atualiza
         //a lista de favoritos, assim esta lista sempre exibira uma lista atualizada
-        if(tab.getPosition() == 1){
+        //Log.d("TAB", "posicao: " + tab.getPosition());
+        if(tab.getPosition() == 0) {
+            TabsAdapter adapter = (TabsAdapter) mViewPager.getAdapter();
+            CarWashNewFragment fragment = (CarWashNewFragment) adapter.carWash;
+            fragment.reloadCarWashList();
+
+        }else if (tab.getPosition() == 1) {
             TabsAdapter adapter = (TabsAdapter) mViewPager.getAdapter();
             CarWashNewFragment fragment = (CarWashNewFragment) adapter.carWashFavorite;
             fragment.setFavoriteListDB(getActivity());
-
         }
+
+
         //Se alterar a tab, atualiza o viewpager
         mViewPager.setCurrentItem(tab.getPosition());
 
