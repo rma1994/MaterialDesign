@@ -73,7 +73,7 @@ public class CarWashTabFragment extends Fragment implements TabLayout.OnTabSelec
         }else if (tab.getPosition() == 1) {
             TabsAdapter adapter = (TabsAdapter) mViewPager.getAdapter();
             CarWashNewFragment fragment = (CarWashNewFragment) adapter.carWashFavorite;
-            fragment.setFavoriteListDB(getActivity());
+            fragment.setFavoriteListDB();
         }
 
 

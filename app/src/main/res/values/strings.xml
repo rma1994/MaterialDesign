@@ -19,6 +19,9 @@
     <string name="allow">Liberar</string>
     <string name="dont_allow">Não Liberar</string>
     <string name="location_not_allowed_title">Acesso a Localização Não Liberado</string>
+    <string name="undo">Desfazer</string>
+    <string name="unfavorited_successful">Favorito excluido!</string>
+    <string name="not_available">Não disponível</string>
 
     <string-array name="tabs">
         <item>Lava Jatos</item>

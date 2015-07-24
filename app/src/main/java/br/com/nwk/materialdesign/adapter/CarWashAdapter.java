@@ -56,7 +56,7 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
         if(current.distancia != 0.000) {
             holder.mDist.setText(String.valueOf(current.distancia) + " km");
         } else {
-            holder.mDist.setText("Erro ao calcular");
+            holder.mDist.setText(R.string.not_available);
         }
 
         //LISTENER para abrir os detalhes
