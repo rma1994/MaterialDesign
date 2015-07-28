@@ -74,7 +74,7 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
             holder.mFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    favoriteOnClickListener.onClickFavorite(holder.itemView, position, holder.mFavorite, data);
+                    favoriteOnClickListener.onClickFavorite(holder.itemView, position, holder.mFavorite, data, CarWashAdapter.this);
                 }
             });
         }
@@ -85,13 +85,25 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
     }
 
     public interface FavoriteOnClickListener{
-        public void onClickFavorite(View view, int idx, CheckBox checkBox, List<CarWash> list);
+        public void onClickFavorite(View view, int idx, CheckBox checkBox, List<CarWash> list, CarWashAdapter adapter);
     }
 
     @Override
     public int getItemCount() {
         //se data for nulo, returna zero
         return this.data != null ? this.data.size() : 0;
+    }
+
+    //deleta um item da lista
+    public void deleteItem(int position){
+        data.remove(position);
+        notifyItemRemoved(position);
+
+    }
+
+    public void addIteam(int position, CarWash carWash){
+        data.add(position, carWash);
+        notifyItemInserted(position);
     }
 
     class CarWashViewHolder extends RecyclerView.ViewHolder {

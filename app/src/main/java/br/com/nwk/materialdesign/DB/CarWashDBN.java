@@ -33,7 +33,7 @@ public class CarWashDBN extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        //caso eu mude a versao do banco de dados, é aqui que jogo o sql
+        //caso eu mude a versao do banco de dados, e aqui que jogo o sql
     }
 
     public long save(CarWash carWash){

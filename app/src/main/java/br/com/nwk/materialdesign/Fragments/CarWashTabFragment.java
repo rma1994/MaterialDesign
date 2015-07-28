@@ -38,9 +38,11 @@ public class CarWashTabFragment extends Fragment implements TabLayout.OnTabSelec
 
         //Tabs
         tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
-        int color = getActivity().getResources().getColor(R.color.black);
+        int normalColor = getActivity().getResources().getColor(R.color.textNotSelected);
+        int selectedColor = getActivity().getResources().getColor(R.color.black);
+
         //Cor preta base no texto
-        tabLayout.setTabTextColors(color, color);
+        tabLayout.setTabTextColors(normalColor, selectedColor);
 
         //faz as abas ocuparem a tela toda.
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -62,7 +64,7 @@ public class CarWashTabFragment extends Fragment implements TabLayout.OnTabSelec
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        //Caso a pessoa clique na segunda aba, roda a função no fragment de favoritos que atualiza
+        //Caso a pessoa clique na segunda aba, roda a funcao no fragment de favoritos que atualiza
         //a lista de favoritos, assim esta lista sempre exibira uma lista atualizada
         //Log.d("TAB", "posicao: " + tab.getPosition());
         if(tab.getPosition() == 0) {

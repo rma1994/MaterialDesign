@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
 
-        //libera o botao home, possibilitando sua customização
+        //libera o botao home, possibilitando sua customizacao
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //Atrela-se o menu nav ao seu componente xml, depois passamos nossa toolbar e layout drawer onde ele esta
@@ -58,14 +58,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //mPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         /*mTabs = (SlidingTabLayout) findViewById(R.id.tabs);
-        mTabs.setDistributeEvenly(true); //faz as abas ocuparem o mesmo espaço na tela
+        mTabs.setDistributeEvenly(true); //faz as abas ocuparem o mesmo espaco na tela
         mTabs.setCustomTabView(R.layout.custom_tabs_view, R.id.tabText);
         mTabs.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorAccent));
 
         mTabs.setViewPager(mPager);*/
 
-        //Conecta aos serviços da Google
+        //Conecta aos servicos da Google
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
-    //Inicia a conexao com os serviços da google
+    //Inicia a conexao com os servicos da google
     @Override
     protected void onStart() {
         //Toast.makeText(this, "Startando", Toast.LENGTH_SHORT).show();
@@ -116,21 +116,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-    //para a conexao com os serviços da google
+    //para a conexao com os servicos da google
     @Override
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
     }
 
-    //pausa a conexao com os serviçlos da google
+    //pausa a conexao com os servicos da google
     @Override
     protected void onPause() {
         super.onPause();
         stopLocationUpdates();
     }
 
-    //ao se conectar com a google, inicia o metodo que pega a localização
+    //ao se conectar com a google, inicia o metodo que pega a localizacao
     @Override
     public void onConnected(Bundle bundle) {
         //Toast.makeText(this,"Conectado ao googleplay services",Toast.LENGTH_SHORT).show();
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.e("Erro de conexao", "Erro ao conectar" + connectionResult);
     }
 
-    //Começa a pegar a atualização da localidade do usuario, com tempo normal de um minuto e minimo de 30sec
+    //Comeca a pegar a atualizacao da localidade do usuario, com tempo normal de um minuto e minimo de 30sec
     protected void startLocationUpdates() {
         Log.d("TAG", "startLocationUpdates()");
         LocationRequest mLocationRequest = new LocationRequest();
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onLocationChanged(Location location) {
         User.location = location;
         //Toast.makeText(this,User.location.getLatitude() + "," + User.location.getLongitude(),Toast.LENGTH_LONG).show();
-        //Log.e("Localização atual", String.valueOf(latitude) + "," + String.valueOf(longitude));
+        //Log.e("Localizacao atual", String.valueOf(latitude) + "," + String.valueOf(longitude));
     }
 
     /*
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             drawable.setBounds(toPixels(0), toPixels(0), toPixels(24), toPixels(24));
             ImageSpan imageSpan = new ImageSpan(drawable);
 
-            //Spannable é o cara que consegue combinar textos com  imagens
+            //Spannable e o cara que consegue combinar textos com  imagens
             SpannableString spannableString = new SpannableString(" ");
             spannableString.setSpan(imageSpan, 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -242,13 +242,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             //View layout = null;
             //layout = inflater.inflate(R.layout.fragment_car_wash, container, false);
-            //Se o bundle não for nulo e for 1, linko ele com minha tela que tem o recycler view
+            //Se o bundle nao for nulo e for 1, linko ele com minha tela que tem o recycler view
             if (bundle != null) {
                 if (bundle.getInt("position") == 0) {
                     this.lavajatoView = inflater.inflate(R.layout.fragment_car_wash, container, false);
                     bar = (ProgressBar) lavajatoView.findViewById(R.id.progress);
 
-                    //cria um recycler view, cria seu adapter e modela esse adapter como um linear layout, que é o mais parecido com uma lista
+                    //cria um recycler view, cria seu adapter e modela esse adapter como um linear layout, que e o mais parecido com uma lista
                     recyclerView = (RecyclerView) lavajatoView.findViewById(R.id.drawerListMain);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     swipeRefreshLayout.setEnabled(false);
 
                     //checa se o usuario liberou o acesso a localidade dele
-                    //caso o usuario não tenha liberado, mostra um dialog pedindo para ele habilitar
+                    //caso o usuario nao tenha liberado, mostra um dialog pedindo para ele habilitar
                     if (locationUtils.isLocationEnabled(getActivity())) {
                         if (User.firstRun == 1 && User.lavaJato != null) {
                             this.lavaJato = User.lavaJato;
@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         builder.setNegativeButton(R.string.dont_allow, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //Toast.makeText(getActivity(), "Não Liberou :(", Toast.LENGTH_LONG).show();
+                                //Toast.makeText(getActivity(), "Nao Liberou :(", Toast.LENGTH_LONG).show();
                                 getActivity().finish();
                             }
                         });
@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             String[] telefone = {"(19) 3322-1155"};
             String[] distancia = {"53km"};
 
-            //pega as informações necessarias e adiciona em nossa lista chamada data, depois retorna essa data;
+            //pega as informacoes necessarias e adiciona em nossa lista chamada data, depois retorna essa data;
             for(int i=0;/*i<nome.length && i<icons.length;i<10;i++){
                 CarWash current = new CarWash();
                 current.iconeClassificacao = icons[0];
@@ -401,7 +401,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             protected List<CarWash> doInBackground(Void... params) {
 
-                //se conecta a internet para pegar as informações dos lavajatos
+                //se conecta a internet para pegar as informacoes dos lavajatos
                 NetworkUtils nwk = new NetworkUtils();
                 String jsonStr = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_EWASH, Constants.CARWASH);
                 List<CarWash> listEcologic = new ArrayList<>();
@@ -410,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 List<CarWash> listFinal = new ArrayList<>();
                 //Log.e("TAG","back");
 
-                //Extrai as informações do meu jsonarray
+                //Extrai as informacoes do meu jsonarray
                 if (jsonStr != null) {
                     try {
                         //Thread.sleep(1500);

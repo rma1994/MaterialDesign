@@ -53,7 +53,7 @@ public class CarWash implements Serializable {
         endereco = rua + ", " + numero + " - " + bairro + "\n" + cidade + " - " + estado + "\n" + cep;
     }
 
-    //para uso onde não necessito um construtor
+    //para uso onde nao necessito um construtor
     public CarWash() {
 
     }

@@ -45,10 +45,10 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     private View containterView;
 
-    //permite ver se o usuario sabe da nav ou não
+    //permite ver se o usuario sabe da nav ou nao
     private boolean mUserLearnedDrawer;
 
-    //permite saber que a nav abre pela primeira vez ou se esta voltando de uma rotação
+    //permite saber que a nav abre pela primeira vez ou se esta voltando de uma rotacao
     private boolean mFromSavedInstanceState;
 
 
@@ -62,7 +62,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         mUserLearnedDrawer = Boolean.valueOf(readFromPreferences(getActivity(), KEY_USER_LEARNED_DRAWER, "false"));
 
-        //verifica se ele voltou de uma rotação
+        //verifica se ele voltou de uma rotacao
         if(savedInstanceState != null){
             mFromSavedInstanceState = true;
         }
@@ -76,7 +76,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         View layout = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
 
-        //cria um recycler view, cria seu adapter e modela esse adapter como um linear layout, que é o mais parecido com uma lista
+        //cria um recycler view, cria seu adapter e modela esse adapter como um linear layout, que e o mais parecido com uma lista
         recyclerView = (RecyclerView) layout.findViewById(R.id.drawerList);
         adapter = new NavMenuAdapter(getActivity(),getData());
         recyclerView.setAdapter(adapter);
@@ -88,7 +88,7 @@ public class NavigationDrawerFragment extends Fragment {
             public void onClick(View v, int position) {
                 //Toast.makeText(getActivity(),"onClick" + position,Toast.LENGTH_LONG).show();
 
-                //Se a pessoa clicar em e-mail, dispara uma intent para o aplicativo padrão de e-mails da pessoa
+                //Se a pessoa clicar em e-mail, dispara uma intent para o aplicativo padrao de e-mails da pessoa
                 if(position == EMAIL){
                     new EmailAsyncTask(Constants.NOSSO_EMAIL, ASSUNTO_EMAIL).execute();
                 }
@@ -113,7 +113,7 @@ public class NavigationDrawerFragment extends Fragment {
         int[] icons = {R.mipmap.car_wash, R.mipmap.send_menu};
         int[] titles = {R.string.car_washes,R.string.talk_to_us};
 
-        //pega as informações necessarias e adiciona em nossa lista chamada data, depois retorna essa data;
+        //pega as informacoes necessarias e adiciona em nossa lista chamada data, depois retorna essa data;
         for(int i=0;i<titles.length && i<icons.length;i++){
             MenuItem current = new MenuItem();
             current.iconId = icons[i];
@@ -189,7 +189,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     //Classe para gerenciar os cliques na Recycler View
     class RecyclerTouchListener implements RecyclerView.OnItemTouchListener{
-        //este cara consegue lhe dizer que a ação do usuario foi um click, duplo click, longo click, etc.
+        //este cara consegue lhe dizer que a acao do usuario foi um click, duplo click, longo click, etc.
         private GestureDetector gestureDetector;
         private ClickListener clickListener;
 

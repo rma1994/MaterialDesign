@@ -1,6 +1,7 @@
 package br.com.nwk.materialdesign.Fragments;
 
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -95,8 +97,8 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         super.onActivityCreated(savedInstanceState);
 
         //checa se o usuario liberou o acesso a localidade dele
-        //caso o usuario não tenha liberado, mostra um dialog pedindo para ele habilitar
-        //Aguarda o retorno da resposta de sua liberação antes de continuar o aplicativo.
+        //caso o usuario nao tenha liberado, mostra um dialog pedindo para ele habilitar
+        //Aguarda o retorno da resposta de sua liberacao antes de continuar o aplicativo.
 
         if(idTab == Constants.ABA_LAVA_JATO) {
             if (locationUtils.isLocationEnabled(getActivity())) {
@@ -121,7 +123,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                 builder.setNegativeButton(R.string.dont_allow, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //Toast.makeText(getActivity(), "Não Liberou :(", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getActivity(), "Nao Liberou :(", Toast.LENGTH_LONG).show();
                         getActivity().finish();
                     }
                 });
@@ -136,7 +138,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
     }
 
 
-    //Quando a tela voltar da liberação de acesso a localidade, continua o app.
+    //Quando a tela voltar da liberacao de acesso a localidade, continua o app.
     //Se o usuario nao liberar. fecha o app
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -164,7 +166,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         };
     }
 
-    //starta a task que busca as informações no banco de dados.
+    //starta a task que busca as informacoes no banco de dados.
     private void taskCarWash() {
         new GetCarWashTask(bar, Constants.YES).execute();
     }
@@ -222,7 +224,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
     private CarWashAdapter.FavoriteOnClickListener onClickFavorite(){
         return new CarWashAdapter.FavoriteOnClickListener() {
             @Override
-            public void onClickFavorite(View view, int idx, final CheckBox checkBox, List<CarWash> data) {
+            public void onClickFavorite(View view, final int idx, final CheckBox checkBox, List<CarWash> data, final CarWashAdapter adapter) {
                 //Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
                 //instancia a classe que cuida de meu banco de dados
                 //pega o lavajato que foi clicado
@@ -239,17 +241,26 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                     //se o click deu um uncheck na checkbox, deleta esse lava jato dos favoritos
                     carWashDBN.delete(carWash);
                     carWash.favoritado = false;
-                    //Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
-                    setFavoriteListDB();
 
+                    //Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
+                    //setFavoriteListDB();
+                    adapter.deleteItem(idx);
                     if(idTab == Constants.ABA_FAVORITOS) {
-                        Log.d("algo", idTab+"");
+                        Log.d("Desfavotirou", "[ " + idTab + "]");
+
+                        /*View v = recyclerView.getChildAt(idx);
+                        ObjectAnimator a = ObjectAnimator.ofFloat(v,"alpha",1f,0f);
+                        a.setDuration(2000);
+                        a.start();*/
+
+
                         Snackbar.make(mainView, R.string.unfavorited_successful, Snackbar.LENGTH_LONG).setAction(R.string.undo, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 carWash.favoritado = true;
                                 carWashDBN.save(carWash);
-                                setFavoriteListDB();
+                                adapter.addIteam(idx,carWash);
+                                //setFavoriteListDB();
                             }
                         }).show();
                     }
@@ -281,7 +292,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
 
         @Override
         protected List<CarWash> doInBackground(Void... params) {
-            //se conecta a internet para pegar as informações dos lavajatos
+            //se conecta a internet para pegar as informacoes dos lavajatos
             NetworkUtils nwk = new NetworkUtils();
             Log.d(ASYNCTASK_TAG, "conectando ao banco de dados online...");
             String jsonStr = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_EWASH, Constants.CARWASH);
@@ -291,20 +302,25 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
             List<CarWash> listFinal = new ArrayList<>();
             //Log.e("TAG","back");
 
-            //Extrai as informações do meu jsonarray
+            //Extrai as informacoes do meu jsonarray
             if (jsonStr != null) {
                 try {
                     //Thread.sleep(1500);
                     JSONArray jsonOArray = new JSONArray(jsonStr);
                     Log.d(ASYNCTASK_TAG, "coletando dados dos lava jatos...");
+
                     for (int i = 0; i < jsonOArray.length(); i++) {
                         JSONObject jsonObject = jsonOArray.getJSONObject(i);
                         CarWash carWash = new CarWash(jsonObject);
 
                         //Aqui o aplicativo se conecta com a GoogleMatrixAPI e pega a distancia de cada um dos lava jatos para o usuario.
                         //String path = "json?origins=-22.831367-47.269207&destinations=-22.832593,-47.271755&mode=DRIVING&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
-                        Log.d(ASYNCTASK_TAG, "coletando distancia do lava jato [ "+ carWash.id +" ]" );
+                        Log.d(ASYNCTASK_TAG, "criando string do lava jato [ "+ carWash.id +" ]" );
                         String path = "json?origins=" + User.location.getLatitude() + "," + User.location.getLongitude() + "&destinations=" + carWash.latitude + "," + carWash.longitude + "&mode=DRIVING&units=metric&key=AIzaSyB6lIKzyTkvShKmb_vg19PTW1sZAKsQysg";
+
+
+                        Log.d(ASYNCTASK_TAG, "coletando distancia do lava jato [ "+ carWash.id +" ]" );
+                        //Log.d(ASYNCTASK_TAG, path+"!" );
                         String jsonDistancia = nwk.doGetRequest(Constants.HTTPS_PROTOCOL, Constants.HOST_GOOGLE_API, path);
                         //Log.e("jsondistancia",jsonDistancia);
                         JSONObject jsonObjectDistancia = new JSONObject(jsonDistancia);
@@ -337,7 +353,8 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                     listFinal.addAll(listTrad);
 
                 } catch (Exception ex) {
-                    Log.e("TAG", ex.getMessage(), ex);
+                    Log.e(ASYNCTASK_TAG, ex.getMessage(), ex);
+
                 }
 
             }
@@ -352,12 +369,16 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
 
         @Override
         protected void onPostExecute(List<CarWash> carWashs) {
-            if (carWashs != null) {
+
+            if (carWashs != null && !carWashs.isEmpty()) {
                 Log.d(ASYNCTASK_TAG, "exibindo lista..." );
                 CarWashNewFragment.this.carWashs = carWashs;
                 //coloca os clicklisteners dos items do lava jato + dos botoes de favoritar
                 recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato(), onClickFavorite()));
                 //Log.e("TAG", "post");
+            } else{
+                Log.d(ASYNCTASK_TAG, "lista de carros esta nula, verifique!" );
+                Toast.makeText(mainView.getContext(), R.string.error_execute_asynctask,Toast.LENGTH_LONG).show();
             }
 
             //Esconde as barras de carregamento ao terminar de carregar

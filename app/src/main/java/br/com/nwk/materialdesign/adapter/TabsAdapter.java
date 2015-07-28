@@ -67,7 +67,7 @@ public class TabsAdapter extends FragmentPagerAdapter{
         drawable.setBounds(toPixels.toPixels(context, 0), toPixels.toPixels(context, 0), toPixels.toPixels(context, 24), toPixels.toPixels(context, 24));
         ImageSpan imageSpan = new ImageSpan(drawable);
 
-        //Spannable é o cara que consegue combinar textos com  imagens
+        //Spannable e o cara que consegue combinar textos com  imagens
         SpannableString spannableString = new SpannableString(" ");
         spannableString.setSpan(imageSpan, 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 

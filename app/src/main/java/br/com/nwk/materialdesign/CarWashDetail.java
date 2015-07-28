@@ -83,8 +83,8 @@ public class CarWashDetail extends AppCompatActivity {
             }
         });
 
-        //Starta uma AsyncTask que se encarregará de abrir o email.
-        //Esta operaçao leva alguns segundos, por isso estou usando uma nota thread.
+        //Starta uma AsyncTask que se encarregara de abrir o email.
+        //Esta operacao leva alguns segundos, por isso estou usando uma nota thread.
         mLayoutEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,7 +112,7 @@ public class CarWashDetail extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //intent com as informações do lava jato
+        //intent com as informacoes do lava jato
         Intent intent = getIntent();
         if(intent!=null){
             CarWash lj = (CarWash) getIntent().getSerializableExtra(Constants.LAVA_JATO);
@@ -205,7 +205,7 @@ public class CarWashDetail extends AppCompatActivity {
                 }catch (Exception e){
                     Log.e("MAPS", e.getMessage());
                 }
-                //traça rota, opção do meu fab
+                //traca rota, opcao do meu fab
             } else if (opcao == OPCAO_ROTA){
                 try{
                     String origem = User.location.getLatitude() + "," + User.location.getLongitude() ;
