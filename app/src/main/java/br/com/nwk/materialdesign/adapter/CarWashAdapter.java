@@ -3,12 +3,14 @@ package br.com.nwk.materialdesign.adapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -20,7 +22,7 @@ import br.com.nwk.materialdesign.util.ToPixels;
  * Created by rma19_000 on 02/07/2015.
  */
 public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashViewHolder> {
-    protected static final String TAG = "eWash";
+    protected static final String TAG = "CarWashAdapter";
     private final List<CarWash> data;
     private final Context context;
     private LavaJatoOnClickListener lavaJatoOnClickListener;
@@ -74,7 +76,8 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
             holder.mFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    favoriteOnClickListener.onClickFavorite(holder.itemView, position, holder.mFavorite, data, CarWashAdapter.this);
+                    favoriteOnClickListener.onClickFavorite(holder.itemView, position, holder.mFavorite, data);
+
                 }
             });
         }
@@ -85,25 +88,13 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
     }
 
     public interface FavoriteOnClickListener{
-        public void onClickFavorite(View view, int idx, CheckBox checkBox, List<CarWash> list, CarWashAdapter adapter);
+        public void onClickFavorite(View view, int idx, CheckBox checkBox, List<CarWash> list);
     }
 
     @Override
     public int getItemCount() {
         //se data for nulo, returna zero
         return this.data != null ? this.data.size() : 0;
-    }
-
-    //deleta um item da lista
-    public void deleteItem(int position){
-        data.remove(position);
-        notifyItemRemoved(position);
-
-    }
-
-    public void addIteam(int position, CarWash carWash){
-        data.add(position, carWash);
-        notifyItemInserted(position);
     }
 
     class CarWashViewHolder extends RecyclerView.ViewHolder {

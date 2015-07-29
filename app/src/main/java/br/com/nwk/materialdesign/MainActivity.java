@@ -42,6 +42,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Conecta aos servicos da Google
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
         //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
@@ -64,13 +72,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorAccent));
 
         mTabs.setViewPager(mPager);*/
-
-        //Conecta aos servicos da Google
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
 
 
     }
