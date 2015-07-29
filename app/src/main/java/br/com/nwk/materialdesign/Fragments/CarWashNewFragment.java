@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -57,7 +58,9 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
     private int idTab;
     private CarWashDBN carWashDBN;
     private View mainView;
-    public int tentativaAsyncTask = 0;
+    private RelativeLayout mNoFavoriteLayout;
+
+    public static int tentativaAsyncTask = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +77,8 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_car_wash_new, container, false);
+
+        mNoFavoriteLayout = (RelativeLayout) view.findViewById(R.id.no_favorite_layout);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -101,6 +106,9 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         //Aguarda o retorno da resposta de sua liberacao antes de continuar o aplicativo.
 
         if (idTab == Constants.ABA_LAVA_JATO) {
+            //oculta a mensagem que diz que nao foi adicionado nenhum favorito
+            mNoFavoriteLayout.setVisibility(View.INVISIBLE);
+
             if (locationUtils.isLocationEnabled(getActivity())) {
                 //starta a asynctask que atualiza os dados dos lava jatos sem mostrar a minha progressbar, mostrando apenas a do swiperepreshlayout
                 taskCarWash();
@@ -174,15 +182,22 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
     //atualiza a lista de favoritos.
     public void setFavoriteListDB() {
         carWashDBN = new CarWashDBN(getActivity());
-        carWashs = new ArrayList<CarWash>();
+        List<CarWash> favoritos = new ArrayList<CarWash>();
 
-        if (carWashs != null && idTab == Constants.ABA_FAVORITOS) {
+        if (idTab == Constants.ABA_FAVORITOS) {
             Log.d(ATUALIZACAO_FAVORITOS, "atualizando lista de favoritos...");
-            this.carWashs = carWashDBN.findAll();
-            recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato(), onClickFavorite()));
-            Log.d(ATUALIZACAO_FAVORITOS, "lista atualizada");
-            //Log.e("a", favoritos.get(0).id + "");
-            //Log.e("TAG", "post");
+            favoritos = carWashDBN.findAll();
+
+            if(favoritos.isEmpty() == false) {
+                //Se a lista estiver vazia, tira a mensagem de não ter favoritos na lista
+                mNoFavoriteLayout.setVisibility(View.INVISIBLE);
+                carWashs = favoritos;
+
+                recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato(), onClickFavorite()));
+                Log.d(ATUALIZACAO_FAVORITOS, "lista atualizada");
+                //Log.e("a", favoritos.get(0).id + "");
+                //Log.e("TAG", "post");
+            }
         }
     }
 
@@ -190,6 +205,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
     public void reloadCarWashList() {
         if (carWashs != null && Constants.ABA_LAVA_JATO == idTab) {
             Log.d(ATUALIZACAO_FAVORITOS, "atualizando lista principal...");
+
             List<CarWash> result = new ArrayList<CarWash>();
             carWashDBN = new CarWashDBN(getActivity());
 
@@ -261,11 +277,19 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                         ad.notifyItemRangeChanged(idx, data.size());
                         Log.e("tag", idx + "");
 
+                        if(data.isEmpty()){
+                            //Se a lista estiver vazia, tira a mensagem de não ter favoritos na lista
+                            mNoFavoriteLayout.setVisibility(View.VISIBLE);
+                        }
+
                         Snackbar.make(mainView, R.string.unfavorited_successful, Snackbar.LENGTH_LONG).setAction(R.string.undo, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 carWash.favoritado = true;
                                 carWashDBN.save(carWash);
+
+                                //Se a lista estiver vazia, tira a mensagem de não ter favoritos na lista
+                                mNoFavoriteLayout.setVisibility(View.INVISIBLE);
 
                                 /*add o item no array
                                 * add o item do recyclerView
@@ -307,6 +331,17 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
 
         @Override
         protected List<CarWash> doInBackground(Void... params) {
+
+            if(CarWashNewFragment.tentativaAsyncTask > 0 ){
+                try {
+                    Log.e(ASYNCTASK_TAG,"localizacao nula, pausando AsyncTask em 1 segundo");
+                    Thread.sleep(1000);
+                    Log.e(ASYNCTASK_TAG, "retomando AsyncTask");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             //se conecta a internet para pegar as informacoes dos lavajatos
             NetworkUtils nwk = new NetworkUtils();
             Log.d(ASYNCTASK_TAG, "conectando ao banco de dados online...");
@@ -320,7 +355,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
             //Extrai as informacoes do meu jsonarray
             if (jsonStr != null) {
                 try {
-                    //Thread.sleep(1500);
+                    //
                     JSONArray jsonOArray = new JSONArray(jsonStr);
                     Log.d(ASYNCTASK_TAG, "coletando dados dos lava jatos...");
 
@@ -394,6 +429,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                 //Esconde as barras de carregamento ao terminar de carregar
                 bar.setVisibility(View.INVISIBLE);
                 swipeRefreshLayout.setRefreshing(false);
+                tentativaAsyncTask = 0;
             } else {
 
                 if (tentativaAsyncTask <= 3) {

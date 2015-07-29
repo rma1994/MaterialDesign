@@ -30,4 +30,26 @@
         android:layout_gravity="center"
         android:visibility="invisible" />
 
+    <!--layout para quando nao encontrar nenhum favorito-->
+    <RelativeLayout
+        android:id="@+id/no_favorite_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/no_favorite_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/favorite"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_favorite_found"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/no_favorite_img"/>
+    </RelativeLayout>
+
 </FrameLayout>

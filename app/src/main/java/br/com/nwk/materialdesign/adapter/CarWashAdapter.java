@@ -113,6 +113,7 @@ public class CarWashAdapter extends RecyclerView.Adapter<CarWashAdapter.CarWashV
             mDist = (TextView) itemView.findViewById(R.id.value_distancia_list);
             mIcon = (ImageView) itemView.findViewById(R.id.image_list);
             mFavorite = (CheckBox) itemView.findViewById(R.id.checkbox_favorite);
+
             /*mFavorite = (CheckBox) itemView.findViewById(R.id.checkbox_tradicional);
             d = mFavorite.getCompoundDrawables();
             d[0].setBounds(0,0, 24,24);
