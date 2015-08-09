@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.Collections;
 import java.util.List;
 
+import br.com.nwk.materialdesign.model.CarWash;
 import br.com.nwk.materialdesign.model.MenuItem;
 import br.com.nwk.materialdesign.R;
 
@@ -20,12 +21,13 @@ import br.com.nwk.materialdesign.R;
 public class NavMenuAdapter extends RecyclerView.Adapter<NavMenuAdapter.NavViewHolder> {
 
     private LayoutInflater inflater;
+    private NavMenuOnClickListener navMenuOnClickListener;
     List<MenuItem> data = Collections.emptyList();
 
-    public NavMenuAdapter(Context context, List<MenuItem> data){
+    public NavMenuAdapter(Context context, List<MenuItem> data, NavMenuOnClickListener navMenuOnClickListener){
         inflater = LayoutInflater.from(context);
         this.data = data;
-
+        this.navMenuOnClickListener = navMenuOnClickListener;
     }
 
     @Override
@@ -37,16 +39,31 @@ public class NavMenuAdapter extends RecyclerView.Adapter<NavMenuAdapter.NavViewH
     }
 
     @Override
-    public void onBindViewHolder(NavViewHolder holder, int position) {
+    public void onBindViewHolder(final NavViewHolder holder, final int position) {
         MenuItem current = data.get(position);
         holder.mTitle.setText(current.title);
         holder.mIcon.setImageResource(current.iconId);
+
+        //coloca um click listener no recycler view.
+        if(navMenuOnClickListener != null){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    navMenuOnClickListener.onClickItem(holder.itemView, position);
+                }
+            });
+        }
     }
 
 
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    //listener para escutar os clicks no RV
+    public interface NavMenuOnClickListener{
+        public void onClickItem(View view, int idx);
     }
 
 
