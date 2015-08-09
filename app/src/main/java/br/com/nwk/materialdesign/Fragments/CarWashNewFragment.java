@@ -1,14 +1,12 @@
 package br.com.nwk.materialdesign.Fragments;
 
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -18,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -163,8 +162,8 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
 
     //atualiza a lista de lava jatos ao deslizar o dedo para baixo das abas
     private SwipeRefreshLayout.OnRefreshListener onRefreshListener(ProgressBar bar) {
-        final ProgressBar pbar = bar;
 
+        final ProgressBar pbar = bar;
         return new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -189,14 +188,18 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
             favoritos = carWashDBN.findAll();
 
             if(favoritos.isEmpty() == false) {
-                //Se a lista estiver vazia, tira a mensagem de n�o ter favoritos na lista
+                //Se a lista estiver vazia, tira a mensagem de nao ter favoritos na lista
                 mNoFavoriteLayout.setVisibility(View.INVISIBLE);
                 carWashs = favoritos;
 
-                recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato(), onClickFavorite()));
+                recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato(), onClickFavorite(),idTab));
                 Log.d(ATUALIZACAO_FAVORITOS, "lista atualizada");
                 //Log.e("a", favoritos.get(0).id + "");
                 //Log.e("TAG", "post");
+            } else {
+                mNoFavoriteLayout.setVisibility(View.VISIBLE);
+                recyclerView.setAdapter(new CarWashAdapter(getActivity(), favoritos, onClickLavaJato(), onClickFavorite(),idTab));
+                Log.d(ATUALIZACAO_FAVORITOS, "lista vazia: sem favotiros");
             }
         }
     }
@@ -214,13 +217,13 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                 carWash.favoritado = carWashDBN.exist(carWash);
                 result.add(carWash);
             }
-            recyclerView.setAdapter(new CarWashAdapter(getActivity(), result, onClickLavaJato(), onClickFavorite()));
+            recyclerView.setAdapter(new CarWashAdapter(getActivity(), result, onClickLavaJato(), onClickFavorite(),idTab));
             Log.d(ATUALIZACAO_FAVORITOS, "lista atualizada");
         }
     }
 
     public void setRecyclerView(Context context, List<CarWash> list) {
-        recyclerView.setAdapter(new CarWashAdapter(context, carWashs, onClickLavaJato(), onClickFavorite()));
+        recyclerView.setAdapter(new CarWashAdapter(context, carWashs, onClickLavaJato(), onClickFavorite(),idTab));
     }
 
     //listener de click nos items da lista de lavajatos
@@ -240,19 +243,33 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
     private CarWashAdapter.FavoriteOnClickListener onClickFavorite() {
         return new CarWashAdapter.FavoriteOnClickListener() {
             @Override
-            public void onClickFavorite(View view, final int idx, final CheckBox checkBox, final List<CarWash> data) {
+            public void onClickFavorite(View view, int idx, CheckBox checkBox, List<CarWash> data) {
                 //Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
                 //instancia a classe que cuida de meu banco de dados
                 //pega o lavajato que foi clicado
                 carWashDBN = new CarWashDBN(view.getContext());
-                final CarWash carWash = data.get(idx);
+                CarWash carWash = data.get(idx);
 
                 if (checkBox.isChecked() == true) {
                     //se o click deu um check na checkbox, insere esse lava jato nos favoritos
                     carWashDBN.save(carWash);
                     carWash.favoritado = true;
                     //Toast.makeText(view.getContext(), "favorito: "+ String.valueOf(checkBox.isChecked()) , Toast.LENGTH_LONG).show();
-                    setFavoriteListDB();
+
+                    if (idTab == Constants.ABA_FAVORITOS) {
+                        //adiciona uma animação que vai fazer o objeto deixar de ser opaco para ser de cor normal
+                        //e reabilita a opção de clicar na view para ver detalhes do lava jato
+                        Log.d("Favoritou", "[ " + idTab + "]");
+                        AlphaAnimation animation1 = new AlphaAnimation(.42f,1.0f);
+                        animation1.setDuration(200);
+                        animation1.setFillAfter(true);
+                        view.startAnimation(animation1);
+                        view.setClickable(true);
+
+                    } else {
+                        setFavoriteListDB();
+                    }
+
 
                 } else if (checkBox.isChecked() == false) {
                     //se o click deu um uncheck na checkbox, deleta esse lava jato dos favoritos
@@ -265,12 +282,37 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
 
                     if (idTab == Constants.ABA_FAVORITOS) {
 
+                        /*adiciona uma animação que vai fazer o objeto sair de sua cor normal e passar a ser opaco
+                        * causando um efeito de desfavoritado.
+                        * e impossibilita que o usuario consiga clicar na view para ver as informações do lava jato
+                        */
                         Log.d("Desfavotirou", "[ " + idTab + "]");
+                        AlphaAnimation animation1 = new AlphaAnimation(1.0f,.42f);
+                        animation1.setDuration(200);
+                        animation1.setFillAfter(true);
+                        view.startAnimation(animation1);
+                        view.setClickable(false);
+
+                        /*
+                        holder.mNome.setTextColor(getResources().getColor(R.color.textDisabled));
+                        holder.mTelefone.setTextColor(getResources().getColor(R.color.textDisabled));
+                        holder.mDist.setTextColor(getResources().getColor(R.color.textDisabled));
+                        holder.mDistValue.setTextColor(getResources().getColor(R.color.textDisabled));
+                        holder.mIcon.setAlpha(.26f);
+                        holder.mFavorite.setAlpha(.26f);
+*/
+                        if(data.isEmpty()){
+                            //Se a lista estiver vazia, tira a mensagem de nao ter favoritos na lista
+                            //view.setVisibility(View.INVISIBLE);
+                            mNoFavoriteLayout.setVisibility(View.VISIBLE);
+                        }
+
+                        /*......*/
                         /*Pega o adapter do recyclerview.
                         * remove o item do meu array
                         * remove o item do recyclerView
                         * reorganiza a quantia maxima de itens no recyclerView
-                        */
+                        *//*
                         final CarWashAdapter ad = (CarWashAdapter) recyclerView.getAdapter();
                         data.remove(idx);
                         ad.notifyItemRemoved(idx);
@@ -278,7 +320,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                         Log.e("tag", idx + "");
 
                         if(data.isEmpty()){
-                            //Se a lista estiver vazia, tira a mensagem de n�o ter favoritos na lista
+                            //Se a lista estiver vazia, tira a mensagem de nao ter favoritos na lista
                             mNoFavoriteLayout.setVisibility(View.VISIBLE);
                         }
 
@@ -288,18 +330,18 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                                 carWash.favoritado = true;
                                 carWashDBN.save(carWash);
 
-                                //Se a lista estiver vazia, tira a mensagem de n�o ter favoritos na lista
+                                //Se a lista estiver vazia, tira a mensagem de nao ter favoritos na lista
                                 mNoFavoriteLayout.setVisibility(View.INVISIBLE);
 
                                 /*add o item no array
                                 * add o item do recyclerView
                                 * reorganiza a quantia maxima de itens no recyclerView
-                                */
+                                *//*
                                 data.add(idx, carWash);
                                 ad.notifyItemInserted(idx);
                                 ad.notifyItemRangeChanged(idx, data.size());
                             }
-                        }).show();
+                        }).show();*/
                     } else {
                         setFavoriteListDB();
                     }
@@ -424,7 +466,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                 Log.d(ASYNCTASK_TAG, "exibindo lista...");
                 CarWashNewFragment.this.carWashs = carWashs;
                 //coloca os clicklisteners dos items do lava jato + dos botoes de favoritar
-                recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato(), onClickFavorite()));
+                recyclerView.setAdapter(new CarWashAdapter(getActivity(), carWashs, onClickLavaJato(), onClickFavorite(),idTab));
                 //Log.e("TAG", "post");
                 //Esconde as barras de carregamento ao terminar de carregar
                 bar.setVisibility(View.INVISIBLE);
@@ -438,6 +480,11 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                     tentativaAsyncTask ++;
                 } else {
                     Toast.makeText(mainView.getContext(), R.string.error_execute_asynctask, Toast.LENGTH_LONG).show();
+                    tentativaAsyncTask = 0;
+
+                    //Esconde as barras de carregamento ao terminar de carregar
+                    bar.setVisibility(View.INVISIBLE);
+                    swipeRefreshLayout.setRefreshing(false);
                     tentativaAsyncTask = 0;
                 }
             }

@@ -54,8 +54,8 @@ public class CarWashDetail extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolbar);
 
-        mClassificacao = (ImageView) findViewById(R.id.img_lavagem_detalhes);
-        mNome = (TextView) findViewById(R.id.detalhes_nome_lavajato);
+        //mClassificacao = (ImageView) findViewById(R.id.img_lavagem_detalhes);
+        //mNome = (TextView) findViewById(R.id.detalhes_nome_lavajato);
         mTelefone = (TextView) findViewById(R.id.phone_details);
         mEmail = (TextView) findViewById(R.id.email);
         mEndereco = (TextView) findViewById(R.id.endereco);
@@ -153,7 +153,9 @@ public class CarWashDetail extends AppCompatActivity {
     private void setLavaJato(CarWash lj){
         this.lj = lj;
 
-        mNome.setText(lj.nome);
+        //mNome.setText(lj.nome);
+        setTitle(lj.nome);
+        //mClassificacao.setImageResource(lj.iconeClassificacao);
         mTelefone.setText(lj.telefone);
         mEmail.setText(lj.email);
         mEndereco.setText(lj.endereco);
