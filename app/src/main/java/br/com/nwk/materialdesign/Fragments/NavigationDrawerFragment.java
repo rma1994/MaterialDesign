@@ -119,7 +119,10 @@ public class NavigationDrawerFragment extends Fragment {
                 if (idx == LISTA){
                     Snackbar.make(mainView,"Função em desenvolvimento",Snackbar.LENGTH_LONG).show();
                 } else if (idx == EMAIL){
-                    new EmailAsyncTask("richard_matheus2004@yahoo.com.br", "Feedback").execute();
+                    //pergunta pro sistema quem pode enviar um e-mail
+                    //informando o nosso e-mail e o assunto do e-mail em questao
+                    Log.e("tag",getString(R.string.our_mail));
+                    new EmailAsyncTask(getString(R.string.our_mail), getString(R.string.feedback)).execute();
                 }
             }
         };
