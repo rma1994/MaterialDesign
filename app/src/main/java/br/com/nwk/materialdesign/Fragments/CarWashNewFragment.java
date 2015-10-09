@@ -4,6 +4,7 @@ package br.com.nwk.materialdesign.Fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -144,6 +145,11 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         }
     }
 
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 
     //Quando a tela voltar da liberacao de acesso a localidade, continua o app.
     //Se o usuario nao liberar. fecha o app
@@ -478,7 +484,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
 
                 if (tentativaAsyncTask <= 3) {
                     Log.d(ASYNCTASK_TAG, "lista de carros esta nula, tentando conectar novamente!");
-                    //new GetCarWashTask(bar, Constants.YES).execute();
+                    new GetCarWashTask(bar, Constants.YES).execute();
                     tentativaAsyncTask ++;
                     Log.i("tent","falha "+tentativaAsyncTask);
                 } else {
