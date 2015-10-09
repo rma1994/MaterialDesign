@@ -375,6 +375,7 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
         protected List<CarWash> doInBackground(Void... params) {
 
             if(CarWashNewFragment.tentativaAsyncTask > 0 ){
+                Log.i("tent","inicio a synt  "+ CarWashNewFragment.tentativaAsyncTask);
                 try {
                     Log.e(ASYNCTASK_TAG,"localizacao nula, pausando AsyncTask em 1 segundo");
                     Thread.sleep(1000);
@@ -419,8 +420,9 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                         carWash.setDistance(jsonObjectDistancia);
 
                         //checa se o lava jato ja foi favoritado
-                        Log.d(ASYNCTASK_TAG, "verificando se o lava jato [ " + carWash.id + " ] ja foi favoritado");
+                        Log.d(ASYNCTASK_TAG, "criando conexao com o database");
                         carWashDBN = new CarWashDBN(getActivity());
+                        Log.d(ASYNCTASK_TAG, "verificando se o lava jato [ " + carWash.id + " ] ja foi favoritado");
                         carWash.favoritado = carWashDBN.exist(carWash);
 
                         //Adiciona o lava jato em sua respectiva lista
@@ -444,11 +446,10 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                     listFinal.addAll(listReuse);
                     listFinal.addAll(listTrad);
 
+                    Log.d(ASYNCTASK_TAG, "asynctask finalizada com sucesso...");
                 } catch (Exception ex) {
                     Log.e(ASYNCTASK_TAG, ex.getMessage(), ex);
-
                 }
-
             }
             return listFinal;
         }
@@ -472,20 +473,24 @@ public class CarWashNewFragment extends android.support.v4.app.Fragment {
                 bar.setVisibility(View.INVISIBLE);
                 swipeRefreshLayout.setRefreshing(false);
                 tentativaAsyncTask = 0;
+                Log.i("tent","sucesso "+tentativaAsyncTask);
             } else {
 
                 if (tentativaAsyncTask <= 3) {
                     Log.d(ASYNCTASK_TAG, "lista de carros esta nula, tentando conectar novamente!");
-                    new GetCarWashTask(bar, Constants.YES).execute();
+                    //new GetCarWashTask(bar, Constants.YES).execute();
                     tentativaAsyncTask ++;
+                    Log.i("tent","falha "+tentativaAsyncTask);
                 } else {
+                    Log.i("tent","erro "+tentativaAsyncTask);
                     Toast.makeText(mainView.getContext(), R.string.error_execute_asynctask, Toast.LENGTH_LONG).show();
                     tentativaAsyncTask = 0;
-
+                    Log.i("tent","zerou "+tentativaAsyncTask);
                     //Esconde as barras de carregamento ao terminar de carregar
                     bar.setVisibility(View.INVISIBLE);
                     swipeRefreshLayout.setRefreshing(false);
                     tentativaAsyncTask = 0;
+
                 }
             }
         }
