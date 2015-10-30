@@ -95,8 +95,8 @@ public class NavigationDrawerFragment extends Fragment {
 
     public static List<MenuItem> getData(){
         List<MenuItem> data = new ArrayList<>();
-        int[] icons = {R.mipmap.car_wash, R.mipmap.send_menu};
-        int[] titles = {R.string.car_washes,R.string.talk_to_us};
+        int[] icons = {/*R.mipmap.car_wash,*/ R.mipmap.send_menu};
+        int[] titles = {/*R.string.car_washes,*/R.string.talk_to_us};
 
         //pega as informacoes necessarias e adiciona em nossa lista chamada data, depois retorna essa data;
         for(int i=0;i<titles.length && i<icons.length;i++){
@@ -116,14 +116,14 @@ public class NavigationDrawerFragment extends Fragment {
         return new NavMenuAdapter.NavMenuOnClickListener() {
             @Override
             public void onClickItem(View view, int idx) {
-                if (idx == LISTA){
+                /*if (idx == LISTA){
                     Snackbar.make(mainView,"Função em desenvolvimento",Snackbar.LENGTH_LONG).show();
-                } else if (idx == EMAIL){
+                } else if (idx == EMAIL){*/
                     //pergunta pro sistema quem pode enviar um e-mail
                     //informando o nosso e-mail e o assunto do e-mail em questao
                     Log.e("tag",getString(R.string.our_mail));
                     new EmailAsyncTask(getString(R.string.our_mail), getString(R.string.feedback)).execute();
-                }
+                //}
             }
         };
     }
